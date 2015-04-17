@@ -1,0 +1,5 @@
+/home/hendrik/Desktop/PT2/Übungen/Übung 1/uebung1/build/CMakeFiles/change.dir
+/home/hendrik/Desktop/PT2/Übungen/Übung 1/uebung1/build/CMakeFiles/fibonacci_iterative.dir
+/home/hendrik/Desktop/PT2/Übungen/Übung 1/uebung1/build/CMakeFiles/fibonacci_recursive.dir
+/home/hendrik/Desktop/PT2/Übungen/Übung 1/uebung1/build/CMakeFiles/triangular.dir
+/home/hendrik/Desktop/PT2/Übungen/Übung 1/uebung1/build/CMakeFiles/walking_stairs.dir

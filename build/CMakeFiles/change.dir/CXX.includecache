@@ -1,0 +1,20 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/hendrik/Desktop/PT2/Übungen/Übung 1/uebung1/change.cpp
+cstdlib
+-
+stdio.h
+-
+iostream
+-
+fstream
+-
+string.h
+-
+
