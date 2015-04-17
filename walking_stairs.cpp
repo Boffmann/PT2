@@ -7,7 +7,16 @@
 
 int combinations(int number)
 {
-	return 0;
+	int x=1;
+	int y=0;
+	int z=0;
+	for(int i=0; i<number;i++)
+	{
+			z = x+y;
+			y = x;
+			x = z;
+	} 
+	return z;
 }
 
 
@@ -18,7 +27,7 @@ int main(int argc, char * argv[])
 
 	int n = std::atoi(argv[1]); 
 
-	std::cout << combinations(n);
+	std::cout << combinations(n) << "\n";
 
 	return 0;
 }
