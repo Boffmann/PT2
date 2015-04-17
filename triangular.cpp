@@ -1,6 +1,8 @@
 
 #include <cstdlib>
 #include <iostream>
+#include <math.h>
+
 
 
 int triangular(int number)
@@ -44,13 +46,25 @@ int main(int argc, char * argv[])
 
 	
 	// ToDo: Exercise 1.b - check if n is in domain, if not print valid domain and codomain and return 2
+	
+	unsigned int dmin = 1;
+	unsigned int dmax = 65536;// -0.5+(sqrt(2*2147483647)));
+	unsigned int cdmin = 1;
+	unsigned int cdmax = 2147483647;
+	
+	if(n >= dmax)
+	{
+			std::cout << "[" << dmin << "," << dmax << "],[" << cdmin << "," << cdmax << "]\n";
+			return 2;
+	}
+	
 	int dreieckszahl = triangular(n);
 	
-	if(dreieckszahl < n) 
+	/*if(dreieckszahl < n) 
 		{
 				std::cout << "Zahl zu groß";
 				return 2;
-		}
+		}*/
 	/*Ein Integer in C++ hat die Größe von 4 Bytes. (Ermittelt über die Methode "sizeof(int)") Also umfasst ein Integer einen Wertebereich von 
 	 * 2^32. Ein signed Int umspannt also den Zahlenbereich von -2^31 = -2147483648 bis (2^31)-1 = 2147483647.*/
 		
