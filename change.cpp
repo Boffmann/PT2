@@ -1,72 +1,64 @@
 
 #include <cstdlib>
-#include <stdio.h>
 #include <iostream>
 #include <fstream>
-#include <string.h>
+#include <string>
 
-std::string change(const int due, const int paid)
+int values[] = {5000, 2000, 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1};
+void change(const int due, const int paid)
 {
-	// ToDo: Exercise 3.a - return set of change tuples
-	int toChange = paid - due;
-	int counter = 14;
-	char changed[15*8] = {0}; //drei für Value, drei für quantity, einer für Komma und einer für Leerzeichen * 15 maximale Zeilen
-	
-	int value[15] = {1,2,5,10,20,50,100,200,500,1000,2000,5000,10000,20000,50000};
-	int quantity[15] = {0};
-	
-	while (toChange != 0)
-	{
-			if(value[counter] <= toChange)
-		{
-				toChange -= value[counter];
-				quantity[counter] += 1;
-		}else{
-			counter--;
+	int current = paid - due;
+	int i = 0;
+	int n = 0;
+	if(current >= 0) {
+		std::cout << "coin,num" << std::endl;
+	}
+	while(1) {
+		if(current >= values[i]) {
+			current -= values[i];
+			n++;
+		} else {
+			if(n > 0)
+				std::cout << values[i] << "," << n << std::endl;
+			i++;
+			n = 0;
+			if (current == 0) break; // exit loop after last line got printed
 		}
 	}
-		
-		for(int i = 0; i<15;i++)
-		{	
-				if(quantity[i] != 0)
-				{
-					char v[3];
-					char q[3];
-					sprintf(v, "%d", value[i]);
-					sprintf(q, "%d", quantity[i]);
-					
-					strcat(changed, v);
-					strcat(changed, ", ");
-					strcat(changed, q);
-					strcat(changed, "\n");
-
-				}
-		}
-	return (std::string)changed;
 }
 
 int main(int argc, char * argv[])
 {
-	if(argc < 3)
-		return 1;	// invalid number of parameters
+	int paid;
+	int due;
+	std::ofstream filestr;
+	if(argc == 5 && (std::strcmp(argv[1], "-o") == 0 || std::strcmp(argv[3], "-o") == 0)) {		// check if -o is an argument (either first or third)
+		if(std::strcmp(argv[1], "-o") == 0) { 
+			// redirect cout into file
+			char * filename = argv[2];
+			filestr.open (filename);
+  			std::cout.rdbuf(filestr.rdbuf());
 
-	const int due  = std::atoi(argv[1]); 
-	const int paid = std::atoi(argv[2]); 
+			due  = std::atoi(argv[3]); 
+	 		paid = std::atoi(argv[4]);
+		} else {
+			// redirect cout into file
+			char * filename = argv[4];
+			filestr.open (filename);
+  			std::cout.rdbuf(filestr.rdbuf());
 
-	// ToDo: Exercise 3.c - catch invalid arguments
-	if(argc == 5 && strcmp(argv[2], "-o"))
-		{
-				std::ofstream f;
-				f.open(argv[4]);
-				f << change(due, paid);
-				f.close();
+			due  = std::atoi(argv[1]); 
+	 		paid = std::atoi(argv[2]);
 		}
-
+	} else if(argc != 3) {
+		return 1;	// invalid number of parameters
+	} else {
+		due  = std::atoi(argv[1]); 
+	 	paid = std::atoi(argv[2]);	
+	}
+	if(due > paid) {
+		return 1;
+	}
 	change(due,paid);
-	
-	std::cout << change(due, paid);
-
-	// ToDo: Exercise 3.b - print change data as CSV to console 
-
 	return 0;
 }
