@@ -10,8 +10,8 @@ void change(const int due, const int paid)
 	int current = paid - due;
 	int i = 0;
 	int n = 0;
-	if(current >= 0) {
-		std::cout << "coin,num" << std::endl;
+	if(current >= 0) {		
+		std::cout << "coin,num" << std::endl;	// only print line when due and paid are valid numbers
 	}
 	while(1) {
 		if(current >= values[i]) {
@@ -22,7 +22,7 @@ void change(const int due, const int paid)
 				std::cout << values[i] << "," << n << std::endl;
 			i++;
 			n = 0;
-			if (current == 0) break; // exit loop after last line got printed
+			if (current == 0) break;	// exit loop after last line got printed
 		}
 	}
 }
@@ -32,7 +32,7 @@ int main(int argc, char * argv[])
 	int paid;
 	int due;
 	std::ofstream filestr;
-	if(argc == 5 && (std::strcmp(argv[1], "-o") == 0 || std::strcmp(argv[3], "-o") == 0)) {		// check if -o is an argument (either first or third)
+	if(argc == 5 && (std::strcmp(argv[1], "-o") == 0 || std::strcmp(argv[3], "-o") == 0)) {
 		if(std::strcmp(argv[1], "-o") == 0) { 
 			// redirect cout into file
 			char * filename = argv[2];
