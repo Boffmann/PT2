@@ -1,1 +1,0 @@
-/usr/bin/c++   -std=gnu++11    CMakeFiles/fibonacci_iterative.dir/fibonacci_iterative.cpp.o  -o fibonacci_iterative -rdynamic 

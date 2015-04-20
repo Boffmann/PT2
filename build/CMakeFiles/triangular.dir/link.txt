@@ -1,1 +1,0 @@
-/usr/bin/c++   -std=gnu++11    CMakeFiles/triangular.dir/triangular.cpp.o  -o triangular -rdynamic 

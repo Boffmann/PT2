@@ -1,1 +1,0 @@
-/usr/bin/c++   -std=gnu++11    CMakeFiles/fibonacci_recursive.dir/fibonacci_recursive.cpp.o  -o fibonacci_recursive -rdynamic 
