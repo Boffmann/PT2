@@ -32,7 +32,7 @@ int main(int argc, char * argv[])
 	int paid;
 	int due;
 	std::ofstream filestr;
-	if(argc == 5 && (std::strcmp(argv[1], "-o") == 0 || std::strcmp(argv[3], "-o") == 0)) {
+	if(argc == 5) {
 		if(std::strcmp(argv[1], "-o") == 0) { 
 			// redirect cout into file
 			char * filename = argv[2];
@@ -41,7 +41,7 @@ int main(int argc, char * argv[])
 
 			due  = std::atoi(argv[3]); 
 	 		paid = std::atoi(argv[4]);
-		} else {
+		} else if(std::strcmp(argv[3], "-o") == 0){
 			// redirect cout into file
 			char * filename = argv[4];
 			filestr.open (filename);
@@ -49,7 +49,7 @@ int main(int argc, char * argv[])
 
 			due  = std::atoi(argv[1]); 
 	 		paid = std::atoi(argv[2]);
-		}
+		} else return 1;
 	} else if(argc != 3) {
 		return 1;	// invalid number of parameters
 	} else {
