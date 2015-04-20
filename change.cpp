@@ -61,5 +61,6 @@ int main(int argc, char * argv[])
 		return 1;
 	}
 	change(due,paid);
+	filestr.close();
 	return 0;
 }

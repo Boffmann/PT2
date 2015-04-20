@@ -4,7 +4,7 @@
 
 int counter;
 
-int fibonacci(int number)
+unsigned long long int fibonacci(int number)
 {
 	// ToDo: Exercise 2.c - count number of calculation steps
 	// ToDo: Exercise 2.b - retun 0 on bad arguments
@@ -12,9 +12,9 @@ int fibonacci(int number)
 		return 0;
 	// ToDo: Exercise 2.b - retrieve nth fibonacci number iteratively
 	counter = 1;
-	int aktuell = 1;
-	int n1 = 1;//fibonacci vom Vorgänger
-	int n2 = 0;//fibonacci vom zweiten Vorgänger
+	unsigned long long int aktuell = 1;
+	unsigned long long int n1 = 1;//fibonacci vom Vorgänger
+	unsigned long long int n2 = 0;//fibonacci vom zweiten Vorgänger
 	while (counter < number) {
 		counter++;
 		aktuell = n1+n2;
@@ -31,7 +31,6 @@ int main(int argc, char * argv[])
 
 	int n = std::atoi(argv[1]); 
 	// ToDo: Exercise 2.c - print calculation steps
-	int fib = fibonacci(n);
-	std::cout << n << " : " << fib << " : " << "#" << counter << std::endl;
+	std::cout << n << " : " << fibonacci(n) << " : " << "#" << counter << std::endl;
 	return 0;
 }

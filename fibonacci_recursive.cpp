@@ -4,7 +4,7 @@
 
 int counter = 0;
 
-int fibonacci(int number)
+unsigned long long int fibonacci(int number)
 {
 	// ToDo: Exercise 2.c - count number of calculation steps
     counter++;
@@ -23,7 +23,6 @@ int main(int argc, char * argv[])
 		return 1;	// invalid number of parameters
 	int n = std::atoi(argv[1]); 
 	// ToDo: Exercise 2.c - print calculation steps
-	int fib = fibonacci(n);
-	std::cout << n << " : " << fib << " : " << "#" << counter << std::endl;
+	std::cout << n << " : " << fibonacci(n) << " : " << "#" << counter << std::endl;
 	return 0;
 }
