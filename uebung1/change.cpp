@@ -3,8 +3,6 @@
 #include <iostream>
 #include <fstream>
 
-#include <string.h>
-
 int values[] = {5000, 2000, 1000, 500, 200, 100, 50, 20, 10, 5, 2, 1};
 void change(const int due, const int paid)
 {
@@ -34,7 +32,7 @@ int main(int argc, char * argv[])
 	int due;
 	std::ofstream filestr;
 	if(argc == 5) {
-		if(strcmp(argv[1], "-o") == 0) { 
+		if(argv[1][0] == '-' && argv[1][1] == 'o') { 
 			// redirect cout into file
 			char * filename = argv[2];
 			filestr.open (filename);
@@ -42,7 +40,7 @@ int main(int argc, char * argv[])
 
 			due  = std::atoi(argv[3]); 
 	 		paid = std::atoi(argv[4]);
-		} else if(strcmp(argv[3], "-o") == 0){
+		} else if(argv[3][0] == '-' && argv[3][1] == 'o'){
 			// redirect cout into file
 			char * filename = argv[4];
 			filestr.open (filename);
