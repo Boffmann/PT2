@@ -13,37 +13,37 @@ bool isValueCorrect(const std::string &teststring, const int &column)
 	{
 		//regExp for column 1
         case 1:
-            regExp = "(^.*?$)";		// id
+            regExp = "^[0-9]+$";	// id
             break;
         case 2:
-            regExp = "(^.*?$)";		// name
+            regExp = "^(.*?)$";		// name
             break;
         case 3:
-            regExp = "(^.*?$)";		// city
+            regExp = "^(.*?)$";		// city
             break;
         case 4:
-            regExp = "(^.*?$)";		//country
+            regExp = "^(.*?)$";		//country
             break;
         case 5:
-            regExp = "(^.*?$)";		// iata
+            regExp = "^(.*?)$";		// iata iata_faa 	^([\"]|)([A-Z0-9]{1,4}|)([\"]|)$
             break;
         case 6:
-            regExp = "^([\"][A-Z]{4}[\"]|[\\\\][N]|)$";	//icao
+            regExp = "^([\"]|)([A-Z]{4}|[\\\\][N]|)([\"]|)$";	//icao (blank is \N and nothing)
             break;
         case 7:
-            regExp = "(^.*?$)";		// latitude
+            regExp = "^(.*?)$";		// latitude		^(([-]|)[0-9]+[.][0-9]{1,6})$
             break;
         case 8:
-            regExp = "(^.*?$)";		// longitude
+            regExp = "^(.*?)$";		// longitude	^(([-]|)[0-9]+[.][0-9]{1,6})$
             break;
         case 9:
-            regExp = "^[1-2][0-8][0-9]{1,3}$|^[2][9][0][0][0]$|^[0-9]{1,4}$";	// altitude
+            regExp = "^([1-2][0-8][0-9]{1,3}$|^[2][9][0][0][0]$|^[0-9]{1,4})$";	// altitude
             break;
         case 10:
-            regExp = "(^.*?$)";		// utc offset timezone
+            regExp = "^([-][1][0-2]|[-][0-9]|[-][349][.][5]|[0-9]|([34569]|[1][01])[.][5]|[1][0-4]|([58]|[1][2])[.][7][5])$";		// utc offset timezone
             break;
         case 11:
-            regExp = "^[\"][EASOZNU][\"]$";	// dst
+            regExp = "^([\"]|)[EASOZNU]([\"]|)$";	// dst
             break;
         case 12:
             regExp = "(^.*?$)";		// database timezone
@@ -62,7 +62,7 @@ void readTokensAndLines(char* path)
 {
 	std::ifstream file(path);
 	std::string parsed, line;
-	std::string id, name, city, country, iata, icao, latitude, longitude, altitude, utc_offset_timezone, dst, database_timezone;
+	std::string id, name, city, country, iata_faa, icao, latitude, longitude, altitude, utc_offset_timezone, dst, database_timezone;
 	std::ofstream logfile;
 	logfile.open("fileio.log");
 	while (std::getline(file, line)) {
@@ -70,6 +70,8 @@ void readTokensAndLines(char* path)
 		linestream.str(line);
 		int tmp = 0;
 		int column = 0;
+
+		//airport with id 5562 has city with , in its name which makes it appear in the logfile for all values
 
 		column++;
 		id = line.substr(tmp,line.find_first_of(',', tmp));
@@ -88,9 +90,12 @@ void readTokensAndLines(char* path)
 		tmp += country.length() + 1;
 		
 		column++;
-		iata = line.substr(tmp,line.find_first_of(",", tmp) - tmp);
-		tmp += iata.length() + 1;
-		
+		iata_faa = line.substr(tmp,line.find_first_of(",", tmp) - tmp);
+		tmp += iata_faa.length() + 1;
+		if(!isValueCorrect(iata_faa, column)){
+			logfile << line << " ERROR in IATA/FAA: " << iata_faa << std::endl;
+		}
+
 		column++;
 		icao = line.substr(tmp,line.find_first_of(",", tmp) - tmp);
 		tmp += icao.length() + 1;
@@ -116,6 +121,9 @@ void readTokensAndLines(char* path)
 		column++;
 		utc_offset_timezone = line.substr(tmp,line.find_first_of(",", tmp) - tmp);
 		tmp += utc_offset_timezone.length() + 1;
+		if(!isValueCorrect(utc_offset_timezone, column)){
+			logfile << line << " ERROR in UTC offset timezone: " << utc_offset_timezone << std::endl;
+		}
 		
 		column++;
 		dst = line.substr(tmp,line.find_first_of(",", tmp) - tmp);
