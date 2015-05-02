@@ -28,7 +28,7 @@ bool isValueCorrect(const std::string &teststring, const int &column)
             regExp = "(^.*?$)";		// iata
             break;
         case 6:
-            regExp = "^([\"][A-Z]{4}[\"]|[\\][N])$";	//icao
+            regExp = "^([\"][A-Z]{4}[\"]|[\\\\][N]|)$";	//icao
             break;
         case 7:
             regExp = "(^.*?$)";		// latitude
