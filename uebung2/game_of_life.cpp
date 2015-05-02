@@ -2,6 +2,7 @@
 #include <ctime>
 #include <cstring>
 #include "bitmap_image.hpp"
+#include <random>
 
 struct Raster {
 	Raster(int w, int h) : width(w), height(h)
@@ -14,6 +15,15 @@ struct Raster {
 		data = new int[width*height];
 
 		//Todo Exercise 2.3a): Fill randomly. Probability of value 1 is seedProbability otherwise value is 0
+		std::default_random_engine generator;
+ 		std::bernoulli_distribution distribution(seedProbability);
+ 		for(int y = 0; y < height; y++) {
+			for(int x = 0; x < width; x++) {
+				if(distribution(generator)) data[x + (y * width)] = 1;
+				else data[x + (y * width)] = 0;
+			}
+		}
+
 	}
 
 	Raster(const std::string &filename)
@@ -31,11 +41,31 @@ struct Raster {
 		data = new int[width*height];
 		
 		//Todo Exercise 2.3a): Load image by using image.get_pixel(...). A black pixels mean 1 - all other values 0.
+		for(int y = 0; y < height; y++) {
+			for(int x = 0; x < width; x++) {
+				unsigned char r,g,b;
+				image.get_pixel(x, y, r, g, b);
+				if(r == 0 && g == 0 && b == 0) {
+					data[x + (y * width)] = 1;
+				} else data[x + (y * width)] = 0;
+			}
+		}
 	}
 
 	void save(const std::string &filename)
 	{
 		//Todo Exercise 2.3a): Save image by using image.set_pixel(...). Living cell should be stored as black pixels, all other pixels are white.
+		//bitmap_image image(filename);
+		bitmap_image img;
+		img.save_image(filename);
+		bitmap_image image(filename);
+		for(int y = 0; y < height; y++) {
+			for(int x = 0; x < width; x++) {
+				if(data[x + (y * width)] == 1) {
+					image.set_pixel(x, y, 0, 0, 0);
+				} else image.set_pixel(x, y, 255, 255, 255);
+			}
+		}
 	}
 
 	~Raster()
@@ -128,14 +158,44 @@ int neighborValue(const Raster &raster, int x, int y, bool isTorus)
     //Todo Exercise 2.3b): Extract information for the given cell. Return 0 (dead) if the color equals white. Otherwise return 1
 	//Todo Exercise 2.3b): In case isTorus is false and (x, y) is outside of raster, return 0
 	//Todo Exercise 2.3b): In case isTorus is true and (x, y) is outside of raster use value of matching cell of opposite side
-    return 0;
+	int w = raster.width;
+	int h = raster.height;
+	if(x < 0 || y < 0 || x >= w || y >= h){
+		if(isTorus) {
+			if(x < 0) {
+				if(y < 0) {
+					return raster.data[w + x + (w * (h + y))];
+				} else return raster.data[w + x + (w * y)];
+			} else if (y < 0) return raster.data[x + (w * (h + y))];
+			else if (x >= w) {
+				if (y >= h) {
+					return raster.data[x - w + (w * (y - h))];
+				} else return raster.data[x - w + (y * h)];
+			} else if (y >= h) return raster.data[x + (w * (y - h))];
+		} else return 0;
+	} else return raster.data[x + (w * y)];
+	return 0;
 }
 
 void simulateInvasion(Raster &raster, float invasionFactor)
 {
 	if (invasionFactor <= 0)
 	{
-		return;
+		std::default_random_engine generator;
+ 		std::bernoulli_distribution distribution(invasionFactor);
+ 		for(int y = 0; y < raster.height; y++) {
+			for(int x = 0; x < raster.width; x++) {
+				if(distribution(generator)) {
+					if(raster.data[x + (raster.width * y)] == 1) raster.data[x + (raster.width * y)] = 0;
+					else raster.data[x + (raster.width * y)] = 1;
+					/*
+					signed int tmp = (raster.data[x + (raster.width * y)] - 1) * (-1;)
+					raster.data[x + (raster.width * y)] - 1) = tmp;
+
+					*/
+				}
+			}
+		}
 	}
 
 	//Todo Exercise 2.3c): Flip random cells (probability to flip for each cell is invasionFactor)
@@ -144,6 +204,21 @@ void simulateInvasion(Raster &raster, float invasionFactor)
 void simulateNextState(Raster &raster, bool isTorus)
 {
 	//Todo Exercise 2.3b): Play one iteration of Game of Life
+	int sum = 0;
+	for(int y = 0; y < raster.height; y++) {
+		for(int x = 0; x < raster.width; x++) {
+			for (int yy=-1; yy<=1; yy++) {
+        		for (int xx=-1; xx<=1; xx++) {
+					 sum += neighborValue(raster, x + xx, y + yy, isTorus);
+        		}
+        	}
+        	if(raster.data[x + (y * raster.width)] == 0) {
+        		if(sum == 3) raster.data[x + (y * raster.width)] = 1;
+        	} else {
+        		if(sum <= 1 || sum >= 4) raster.data[x + (y * raster.width)] = 0;
+        	}
+		}
+	}
 }
 
 int main(int argc, char* argv[])
