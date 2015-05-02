@@ -2,7 +2,7 @@
 #include <dirent.h>
 #include <string>
 
-#if defined _MSC_VER
+#if defined _WIN32
 #include <direct.h>
 #elif defined __GNUC__
 #include <sys/types.h>
@@ -13,7 +13,7 @@
 // Beware: this function only works when the directory is empty..
 void removeDirectory(std::string dir)
 {
-#if defined _MSC_VER
+#if defined _WIN32
     _rmdir(dir.data());
 #elif defined __GNUC__
     rmdir(dir.data());
@@ -22,7 +22,7 @@ void removeDirectory(std::string dir)
 
 void createDirectory(std::string dir)
 {
-#if defined _MSC_VER
+#if defined _WIN32
     _mkdir(dir.data());
 #elif defined __GNUC__
     mkdir(dir.data(), 0777);

@@ -1,5 +1,6 @@
 #include <iostream>
 #include <ctime>
+#include <cstring>
 #include "bitmap_image.hpp"
 
 struct Raster {
@@ -124,7 +125,7 @@ struct CommandLineParameter
 
 int neighborValue(const Raster &raster, int x, int y, bool isTorus)
 {
-    //Todo Exercise 2.3b): Extract information for the given cell. Return 0 (dead) if the color equals black. Otherwise return 1
+    //Todo Exercise 2.3b): Extract information for the given cell. Return 0 (dead) if the color equals white. Otherwise return 1
 	//Todo Exercise 2.3b): In case isTorus is false and (x, y) is outside of raster, return 0
 	//Todo Exercise 2.3b): In case isTorus is true and (x, y) is outside of raster use value of matching cell of opposite side
     return 0;
