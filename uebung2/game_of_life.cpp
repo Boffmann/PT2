@@ -56,9 +56,7 @@ struct Raster {
 	{
 		//Todo Exercise 2.3a): Save image by using image.set_pixel(...). Living cell should be stored as black pixels, all other pixels are white.
 		//bitmap_image image(filename);
-		bitmap_image img;
-		img.save_image(filename);
-		bitmap_image image(filename);
+		bitmap_image image(width, height);
 		for(int y = 0; y < height; y++) {
 			for(int x = 0; x < width; x++) {
 				if(data[x + (y * width)] == 1) {
@@ -66,6 +64,7 @@ struct Raster {
 				} else image.set_pixel(x, y, 255, 255, 255);
 			}
 		}
+		image.save_image(filename);
 	}
 
 	~Raster()
@@ -204,12 +203,12 @@ void simulateInvasion(Raster &raster, float invasionFactor)
 void simulateNextState(Raster &raster, bool isTorus)
 {
 	//Todo Exercise 2.3b): Play one iteration of Game of Life
-	int sum = 0;
 	for(int y = 0; y < raster.height; y++) {
 		for(int x = 0; x < raster.width; x++) {
+			int sum = 0;
 			for (int yy=-1; yy<=1; yy++) {
         		for (int xx=-1; xx<=1; xx++) {
-					 sum += neighborValue(raster, x + xx, y + yy, isTorus);
+					 if(xx != 0 || yy != 0) sum += neighborValue(raster, x + xx, y + yy, isTorus);
         		}
         	}
         	if(raster.data[x + (y * raster.width)] == 0) {
