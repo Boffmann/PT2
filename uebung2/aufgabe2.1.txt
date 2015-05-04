@@ -1,11 +1,12 @@
 a)
-Vorname:		(^.{1,50}?$)
-Nachname:	(^.{1,50}?$)
-Strasse:		(^.{1,50}?$)
-Nummer:		(^[0-9]{1,3}[A-Za-z]{0,1}$)
-Postleitzahl:	(^[0-9]{5}$)
-Ort:			(^.{1,50}?$)
+Vorname:	^([^0-9]{1,100}?)$
+Nachname:	^([^0-9]{1,100}?)$
+Wir gehen davon aus, dass ein Name alle (Sonder)Zeichen enthalten kann, bis auf Nummern (verschiedene Sprachen/Alphabete etc.).
+Strasse:	^(.{1,100}?)$
+Nummer:		^([0-9]{1,3}[A-Za-z]{0,1})$
+Postleitzahl:	^([0-9]{5})$
+Ort:		^(.{1,100}?)$
 b)
-Adresszusatz:	????
-Vorname:		(^.{1,50}?$)
-Nachname:	(^.{1,50}?$)
+Adresszusatz:	^([0-9]{1,3}[A-Za-z]{0,1})$[\r\n]^[c][\/][o][ ]([^0-9]{1,100}?)$
+Vorname:	^(.{1,50}?)$
+Nachname:	^(.{1,100}?)$
