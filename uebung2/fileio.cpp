@@ -16,7 +16,7 @@ bool isValueCorrect(const std::string &teststring, const int &column)
             regExp = "^[0-9]+$";	// id
             break;
         case 2:
-            regExp = "^(.*?)$";		// name
+            regExp = "^[\"][A-Za-z]+[( |\\-)A-Za-z]+[\"]$";		// name
             break;
         case 3:
             regExp = "^(.*?)$";		// city
@@ -46,9 +46,8 @@ bool isValueCorrect(const std::string &teststring, const int &column)
             regExp = "^([\"]|)[EASOZNU]([\"]|)$";	// dst
             break;
         case 12:
-            regExp = "(^.*?$)";		// database timezone
+            regExp = "^[\"].+[\\/].+[\"]$";		// database timezone
             break;    
-
 		//Todo implement cases for other columns
 
 		default:
@@ -68,78 +67,43 @@ void readTokensAndLines(char* path)
 	while (std::getline(file, line)) {
 		std::istringstream linestream;
 		linestream.str(line);
-		int tmp = 0;
+		int begin = 0;
+		int end = 0;
 		int column = 0;
-
-		//airport with id 5562 has city with , in its name which makes it appear in the logfile for all values
-
-		column++;
-		id = line.substr(tmp,line.find_first_of(',', tmp));
-		tmp += id.length() + 1;
-		
-		column++;
-		name = line.substr(tmp,line.find_first_of(",", tmp) - tmp);
-		tmp += name.length() + 1;
-		
-		column++;
-		city = line.substr(tmp,line.find_first_of(",", tmp) - tmp);
-		tmp += city.length() + 1;
-		
-		column++;
-		country = line.substr(tmp,line.find_first_of(",", tmp) - tmp);
-		tmp += country.length() + 1;
-		
-		column++;
-		iata_faa = line.substr(tmp,line.find_first_of(",", tmp) - tmp);
-		tmp += iata_faa.length() + 1;
-		if(!isValueCorrect(iata_faa, column)){
-			logfile << line << " ERROR in IATA/FAA: " << iata_faa << std::endl;
+		std::regex comma;
+		comma = "[^ ][,][^ ]";
+		std::string p_line = line;
+		line = "," + line + ",a";
+    	std::string name_timezone;
+		for(std::string::size_type i = 0; i < line.size(); ++i) {
+			bool tmp2;
+			if(i == 0) tmp2 = std::regex_match(line.substr(i , 2), comma);
+			else if(i == line.size() - 1) tmp2 = std::regex_match(line.substr(i-1 , 2), comma);
+			else tmp2 = std::regex_match(line.substr(i-1 , 3), comma);
+    		if(tmp2) {
+    			begin = end + 1;
+    			end = i;
+    			std::string tmp = line.substr(begin, end - begin);
+    			//std::cout << tmp << std::endl;
+    			column++;
+    			bool tmp3 = isValueCorrect(tmp, column);
+    			if(isValueCorrect(tmp, column)) {
+    				if(column == 2) name_timezone = tmp + " - ";
+    				if(column == 12) {
+    					name_timezone += tmp;
+    					std::cout << name_timezone << std::endl;
+    					name_timezone = "";
+    				}
+    			} else {
+    				if(column == 6) logfile << p_line << " ERROR in ICAO: " << tmp << std::endl;
+    				if(column == 9) logfile << p_line << " ERROR in Altitude: " << tmp << std::endl;
+    				if(column == 10) logfile << p_line << " ERROR in DST: " << tmp << std::endl;
+    			}
+    		}
 		}
-
-		column++;
-		icao = line.substr(tmp,line.find_first_of(",", tmp) - tmp);
-		tmp += icao.length() + 1;
-		if(!isValueCorrect(icao, column)){
-			logfile << line << " ERROR in ICAO: " << icao << std::endl;
-		}
-
-		column++;
-		latitude = line.substr(tmp,line.find_first_of(",", tmp) - tmp);
-		tmp += latitude.length() + 1;
-		
-		column++;
-		longitude = line.substr(tmp,line.find_first_of(",", tmp) - tmp);
-		tmp += longitude.length() + 1;
-		
-		column++;
-		altitude = line.substr(tmp,line.find_first_of(",", tmp) - tmp);
-		tmp += altitude.length() + 1;
-		if(!isValueCorrect(altitude, column)){
-			logfile << line << " ERROR in Altitude: " << altitude << std::endl;
-		}
-
-		column++;
-		utc_offset_timezone = line.substr(tmp,line.find_first_of(",", tmp) - tmp);
-		tmp += utc_offset_timezone.length() + 1;
-		if(!isValueCorrect(utc_offset_timezone, column)){
-			logfile << line << " ERROR in UTC offset timezone: " << utc_offset_timezone << std::endl;
-		}
-		
-		column++;
-		dst = line.substr(tmp,line.find_first_of(",", tmp) - tmp);
-		tmp += dst.length() + 1;
-		if(!isValueCorrect(dst, column)){
-			logfile << line << " ERROR in DST: " << dst << std::endl;
-		}
-
-		column++;
-		database_timezone = line.substr(tmp,line.find_first_of(",", tmp) - tmp);
-		
-		std::cout << name << " - " << database_timezone << std::endl;
 		// ToDo: Exercise 2.2a - Split line and write result to std::cout
 		// ToDo: Exercise 2.2b - Check each part of line with isValueCorrect and log if values are not supported. Use and extend isValueCorrect function for this.	
 	}
-	//logfile.close();
 }
 
 int main(int argc, char * argv[])
