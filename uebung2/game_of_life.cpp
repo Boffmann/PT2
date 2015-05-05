@@ -187,8 +187,6 @@ void simulateInvasion(Raster &raster, float invasionFactor)
  	for(int y = 0; y < raster.height; y++) {
 		for(int x = 0; x < raster.width; x++) {
 			if(distribution(generator)) {
-				//if(raster.data[x + (raster.width * y)] == 1) raster.data[x + (raster.width * y)] = 0;
-				//else raster.data[x + (raster.width * y)] = 1;
 				signed int tmp = (raster.data[x + (raster.width * y)] - 1) * (-1);
 				raster.data[x + (raster.width * y)] = tmp;
 				// if 1: 1-1 = 0; 0 * -1 = 0
