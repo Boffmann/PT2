@@ -2,6 +2,7 @@
 #include <dirent.h>
 #include <string>
 #include <fstream>
+#include <vector>
 #if defined _WIN32
 #include <direct.h>
 #elif defined __GNUC__
@@ -11,19 +12,20 @@
 #endif
 
 std::ofstream output;
-int fsize = 0;
-int filesize = 0;
-int fnum = 0;
-int filepath = 0;
-int saveinformation = 0;
-typedef struct file_list {
-	file_list* next;
+bool fsize = false;
+bool fnum = false;
+bool file_w = false;
+bool saveinformation = false;
+bool flat = false;
+std::string flat_dir;
+typedef struct file_data {
+	std::string ending;
 	int size;
 	int number;
-	std::string path;
-	std::string ending;
-} file_list;
-file_list* list;
+	std::string files;
+} file_data;
+std::vector<file_data> file_list;
+std::vector<std::string> name_list;
 
 // Beware: this function only works when the directory is empty..
 void removeDirectory(std::string dir)
@@ -44,37 +46,31 @@ void createDirectory(std::string dir)
 #endif
 }
 
-file_list* lastelement(file_list* tmp_list) {
-	while(tmp_list->next != NULL) {
-		tmp_list = tmp_list->next;
-	}	
-	return tmp_list;
-}
-
-void addtolist(int size, std::string path, std::string ending) {
-	file_list* add;
-	if(fsize) add->size = size; else add->size = 0;
-	if(fnum) add->number = 1; else add->number = 0;
-	if(filepath) add->path = path;
-	add->ending = ending;
-	add->next = NULL;
-	lastelement(list)->next = add;
-}
-
-void checklist(std::string ending, uint size, std::string path) {
+bool checkName(std::string name) {
 	int suc = 0;
-	file_list* tmp = list;
-	while(tmp != NULL) {
-		if(ending.compare(tmp->ending) == 0) {
-			if(fsize) tmp->size += size;
-			if(fnum) tmp->number++;
-			if(filepath) tmp->path = path + "\n";
+	for(unsigned int i = 0; i < name_list.size(); i++) {
+		if(name.compare(name_list[i]) == 0) {
 			suc = 1;
-		}
-		tmp = tmp->next;
+		} 
 	}
-	if(!suc) addtolist(size, path, ending);
+	if(suc == 0) return true;
+	else return false;
 }
+
+std::string underscorePath(std::string path) {
+	std::string underscore = path;
+	for(int i = 0; i < underscore.length(); i++) {
+		if(underscore[i] == '/') {
+			underscore[i] = '_';
+		}
+	}
+	if(underscore[0] == '.') underscore = underscore.substr(1, underscore.length() - 1);
+	while(underscore[0] == '_') {
+		underscore = underscore.substr(1, underscore.length() - 1);
+	}
+	return underscore;
+}
+
 
 void traverseDirectory(std::string path)
 {
@@ -104,17 +100,47 @@ void traverseDirectory(std::string path)
 				if (!stat(fullpath.c_str(), &fileinfo))
 				{
 					std::cout << (unsigned int)fileinfo.st_size << " bytes" << std::endl;
+					int tmp = name.find_last_of(".");
+					std::string end;
+					if(tmp >= 0 && tmp < name.length()) end = name.substr(tmp + 1, name.length() - tmp - 1);
+					else end = " ";
+					std::cout << name << std::endl;
 					if(saveinformation) {
-						//std::string tmp = "";
-						//if(tmp.compare(name.substr(name.find_last_of(".", 5) != 0) tmp = name.substr(name.find_last_of(".", 5);
-						//checklist(tmp, (unsigned int)(fileinfo.st_size % 1000), path);
-						//std::cout << name.substr(name.find_last_of(".", name.length() - name.find_last_of(".", 0))) << std::endl;
-						std::string tmp;
-						tmp = name.substr(0,1);
-						if(tmp.compare(".") == 0) tmp = ""; else tmp = name.substr(name.find_last_of(".", name.length()));
-						std::cout << name << " "<< name.find_last_of(".", name.length()) << " " << tmp << std::endl;
-
+						int suc = 0;
+						for(unsigned int i = 0; i < file_list.size(); i++) {
+							if(end.compare(file_list[i].ending) == 0) {
+								suc = 1;
+								if(fsize) file_list[i].size += (unsigned int)(fileinfo.st_size % 1000);
+								if(fnum) file_list[i].number += 1;
+								if(file_w) {
+									std::string tmp2 = file_list[i].files + "," + name;
+									file_list[i].files = tmp2;
+								}
+							} 
+						}
+						if(suc == 0) {
+							file_data tmp;
+							tmp.ending = end;
+							if(fsize) tmp.size = (unsigned int)(fileinfo.st_size % 1000);
+							if(fnum) tmp.number = 1;
+							if(file_w) tmp.files = "," + name;
+							file_list.push_back(tmp);
+						}
 					} 
+					if(flat) {
+						std::string tmp_name = name;
+						int count = 2;
+						while(!checkName(tmp_name)) {
+							tmp_name = name + std::to_string(count);
+							count++;
+						}
+						tmp_name = underscorePath(path + "/") + tmp_name;
+						std::string tmp_path = flat_dir + tmp_name;
+						//std::cout << "path " << tmp_path << " name " << tmp_name << std::endl;
+						std::ifstream src(name, std::ios::binary);
+     					std::ofstream dst(tmp_path, std::ios::binary);
+    			 		dst << src.rdbuf();
+					}
 				}
 				else
 				{
@@ -131,10 +157,17 @@ void traverseDirectory(std::string path)
 }
 
 void writetocsv() {
-	file_list* tmp = list;
-	while(tmp != NULL) {
-		output << tmp->ending << "," << tmp->size << "KB," << tmp->number << "," << tmp->path << std::endl;
-		tmp->next = tmp->next->next;
+	output << "file ending";
+	if(fsize) output << ",size";
+	if(fnum) output << ",number of files";
+	if(file_w) output << ",list of files";
+	output << std::endl;
+	for(unsigned int i = 0; i < file_list.size(); i++) {
+		output << file_list[i].ending;;
+		if(fsize) output << "," << file_list[i].size << "KB";
+		if(fnum) output << "," << file_list[i].number;
+		if(file_w) output << file_list[i].files;
+		output << std::endl;
 	}
 }
 
@@ -142,43 +175,42 @@ int main(int argc, char * argv[])
 {
 	if (argc < 2)
 	{
-		std::cout << "not enough arguments - USAGE: dirinfo [DIR] -o [OUTPUT.csv] COLUMNS" << std::endl;
+		std::cout << "not enough arguments - USAGE: dirinfo [DIR] -o [OUTPUT.csv] COLUMNS -flat [OUTPUTDIR]" << std::endl;
 		std::cout << "possible COLUMNS are:" << std::endl;
 		std::cout << "-fsize\t\t\tSummarized file size for files with same extension will be exported" << std::endl;
         std::cout << "-fnum\t\t\tSummarized number of files with same extension will be exported" << std::endl;
 		std::cout << "-files\t\t\tRelative path of files with same extension will be exported" << std::endl;
-
-
 		return -1;	// invalid number of parameters
 	}
 	std::string file;
 	int directory_index[argc];
 	for(int i = 0; i < argc; i++) {
-		directory_index[i] = 1;
 		std::string tmp = argv[i];
 		if(tmp.compare("-fsize") == 0) {
-			fsize = 1;
+			fsize = true;
 			directory_index[i] = 0;
-		}
-
-		if(tmp.compare("-fnum") == 0) {
-			fnum = 1;
+		} else if(tmp.compare("-fnum") == 0) {
+			fnum = true;
 			directory_index[i] = 0;
-		}
-		if(tmp.compare("-files") == 0) {
-			filepath = 1;
+		} else if(tmp.compare("-files") == 0) {
+			file_w = true;
 			directory_index[i] = 0;
-		}
-		if(tmp.compare("-o") == 0) {
+		} else if(tmp.compare("-o") == 0) {
 			file = argv[i+1];
 			//createDirectory(file.substr(0,file.find_last_of("/", 0)));
 			output.open(file);
-			saveinformation = 1;
+			saveinformation = true;
 			directory_index[i] = 0;
-			directory_index[i+1] = 0;
-		}
+			directory_index[i+1] = 2;
+		} else if(tmp.compare("-flat") == 0) {
+			flat = true;
+			directory_index[i] = 0;
+			directory_index[i+1] = 2;
+			flat_dir = argv[i+1];
+			flat_dir = flat_dir + "/";
+			createDirectory(flat_dir);
+		} else if (directory_index[i] != 2) directory_index[i] = 1;
 	}
-	list = {NULL};
 	for(int i = 0; i < argc; i++) {
 		if(directory_index[i] == 1)
 			traverseDirectory(argv[i]);
