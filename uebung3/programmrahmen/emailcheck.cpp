@@ -24,12 +24,6 @@ void ReplaceAll(std::wstring& str, const std::wstring& from, const std::wstring&
 
 //ToDo 3.1a - implement use std::transform()
 void caseConvert(std::wstring& str) {
-    
-	/*for(int i = 0; i<str.length();i++)
-	{
-		if(str[i] > 64 && str[i] < 91)
-			str[i] += 32;
-	}*/
 
 	std::transform(str.begin(), str.end(), str.begin(), ::tolower);
 
@@ -62,17 +56,20 @@ bool emailCheck(std::wstring mail, std::wstring firstname, std::wstring name, st
 
 	std::cout << in_mail_vorname << "__" << in_mail_nachname << "__" << in_mail_firma << std::endl;
 
-	/*if((strncmp(s_firstname, in_mail_vorname, in_mail_vorname.length()) <= 0 || strncmp(s_firstname, in_mail_nachname, in_mail_nachname.length()) <= 0) 
-		&& (strncmp(s_name, in_mail_nachname, in_mail_nachname.length()) <= 0 || strncmp(s_name, in_mail_vorname, in_mail_vorname.length()) <= 0) 
-		&& (strncmp(s_company, in_mail_firma, in_mail_firma.length()) <= 0))*/
-
-		if((s_firstname.compare(in_mail_vorname) <= 0 || s_firstname.compare(in_mail_nachname) <= 0) 
-		&& (s_name.compare(in_mail_nachname) <= 0 || s_name.compare(in_mail_vorname) <= 0) 
-		//&& (strncmp(s_company, in_mail_firma, in_mail_firma.length()) <= 0)
-		)
-		return true;
-	else 
-    return false;
+	//bool f_name = s_firstname.compare(in_mail_vorname) == 0 || s_firstname.substr(0, 1).compare(in_mail_vorname) == 0;
+	//bool l_name = s_name.compare(in_mail_nachname) == 0 || s_name.substr(0, 1).compare(in_mail_nachname) == 0;
+	bool f_name = s_firstname.find(in_mail_vorname, 0) != -1;
+	bool l_name = s_name.find(in_mail_nachname, 0) != -1;
+	//bool finv_name = s_firstname.compare(in_mail_nachname) == 0 || s_firstname.substr(0, 1).compare(in_mail_nachname) == 0;
+	//bool linv_name = s_name.compare(in_mail_vorname) == 0 || s_name.substr(0, 1).compare(in_mail_vorname) == 0;
+	bool finv_name = s_firstname.find(in_mail_nachname, 0) != -1;
+	bool linv_name = s_name.find(in_mail_vorname, 0) != -1;
+	bool comp = in_mail_firma.find(s_company, 0) != -1;
+	//std::string ffname = "fname: " + s_firstname + " " + in_mail_vorname + " name: " + s_name + " " + in_mail_nachname + " comp: " + s_company + " " + in_mail_firma;
+	//std::cout << ffname << std::endl;
+	//std::cout << s_company << " " << in_mail_firma << " " << comp << std::endl;
+	if(((f_name && l_name) || (finv_name && linv_name)) && comp) return true;
+	else return false;
 }
 
 int main(int argc, char * argv[])
