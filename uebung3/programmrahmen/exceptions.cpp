@@ -73,7 +73,19 @@ void parseLine(std::string line, int lineNum)
             if(count == 2) exc.m_actFields = fieldNames[1];
             else if(count == 3) exc.m_actFields = fieldNames[2];
             throw exc;
-        } catch(std::logic_error e) {
+        } catch(std::logic_error e) {  
+            try {
+                while(std::getline(linestream, parsed, ';')) {
+                    count++;
+                    inaline(parsed, count);  
+                }
+            } catch (std::out_of_range e) {    
+                struct FormatException exc;
+                exc.m_actLine = lineNum;
+                if(count == 2) exc.m_actFields = fieldNames[0] + "," + fieldNames[1];
+                else if(count == 3) exc.m_actFields = fieldNames[0] + "," + fieldNames[2];
+            throw exc;
+        }
             struct FormatException exc;
             exc.m_actLine = lineNum;
             exc.m_actFields = fieldNames[0];
@@ -88,7 +100,7 @@ void writeOutFormatException(const FormatException & e)
 	try {
         int line = e.m_actLine;
         std::string line_content = e.m_actFields;
-        logfile << "line: " << line << ";invalid data field: " << line_content << std::endl;
+        logfile << "line: " << line << ";invalid data field(s): " << line_content << std::endl;
     } catch (std::ios_base::failure e) {
         std::cerr << e.what();
     }
@@ -101,7 +113,7 @@ void checkData(std::string path) {
 
     int validLines = 0;
     int invalidLines = 0;
-    int line_Nr = 0;
+    int line_Nr = 1;
     std::ifstream file;
     std::string line, parsed;
     logfile.open("exceptions.log");
@@ -113,7 +125,7 @@ void checkData(std::string path) {
             try {
                 
                 // skip first line which names the columns
-                if(line_Nr > 0) {
+                if(line_Nr > 1) {
                     parseLine(line, line_Nr);
                     validLines++;
                 }
