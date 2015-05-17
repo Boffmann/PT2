@@ -8,21 +8,29 @@
 #include <stdexcept>
 #include <ctime>
 
-
+std::ofstream logfile;
 // transforms a string to a date. Throws a logic_error if year is *not* between 2005 and 2015
 std::tm stringToTime(std::string date)
 {
+#if 0
     std::tm t;
     std::istringstream ss(date);
-    //ss >> std::get_time(&t, "%d.%m.%Y");
-
     strptime(date.c_str(), "%d.%m.%Y", &t);
+    if(t.tm_year < 105 || t.tm_year > 115)
+        throw std::logic_error("Year should be between 2005 and 2015");
+    return t;
+#endif
+
+    std::tm t;
+#if defined(__GNUC__) && (__GNUC__ < 5)
+    strptime(date.c_str(), "%d.%m.%Y", &t);
+#else
+    std::istringstream ss(date);
+    ss >> std::get_time(&t, "%d.%m.%Y");
+#endif
     
     if(t.tm_year < 105 || t.tm_year > 115)
-    {
-            std::cout << 1900+t.tm_year << std::endl;
         throw std::logic_error("Year should be between 2005 and 2015");
-    }
     
     return t;
 }
@@ -33,6 +41,14 @@ struct FormatException
     std::string m_actFields;
 };
 
+void inaline(std::string parsed, int count) {
+    if(count == 1) {
+        stringToTime(parsed);
+    } else {
+        float casted = std::stof(parsed);
+    }
+}
+
 void parseLine(std::string line, int lineNum)
 {
     const std::string fieldNames[3] = { "Date", "Temperature", "Rainfall" };
@@ -41,88 +57,77 @@ void parseLine(std::string line, int lineNum)
     //Catch all exceptions thrown by these methods. If there have been any exceptions, aggregate all necessary information 
     //into an instance of FormatException and throw that instance.
 
-   std::string parsed;
+    std::string parsed;
     int count = 0;
     std::istringstream linestream;
-        linestream.str(line);
-
-
-    while(std::getline(linestream, parsed, ';'))
-    {
-    	//std::cout << "enterd " << parsed << std::endl;
-        count++;
-    
-	           	try{	           		
-		           		if(count == 1)
-			           		{
-			                stringToTime(parsed);
-			           		}
-		            	else
-			            	{
-			                float casted = std::stof(parsed, 0);
-			                }	
-	           	}catch(std::exception e){	        
-	                struct FormatException exc;
-	                exc.m_actLine = lineNum;
-	                exc.m_actFields = line;
-	                throw exc;
-	            } 
-
+    linestream.str(line);
+    while(std::getline(linestream, parsed, ';')) {
+    	count++;
+        try {
+            inaline(parsed, count); // catches one more wrong date. idk why
+            //if(count == 1) stringToTime(parsed);
+            //else float casted = std::stof(parsed);   
+        } catch (std::out_of_range e) {    
+            struct FormatException exc;
+            exc.m_actLine = lineNum;
+            if(count == 2) exc.m_actFields = fieldNames[1];
+            else if(count == 3) exc.m_actFields = fieldNames[2];
+            throw exc;
+        } catch(std::logic_error e) {
+            struct FormatException exc;
+            exc.m_actLine = lineNum;
+            exc.m_actFields = fieldNames[0];
+            throw exc;  
+        }
     }
-    
 }
 
 // todo 3.2c..
 void writeOutFormatException(const FormatException & e)
 {
-	std::ofstream logfile;
-	logfile.open("../../data/logfile.txt");
-	int line = e.m_actLine;
-	std::string line_content = e.m_actFields;
-
-	logfile << "Line: " << line << " ; content: " << line_content;
-
+	try {
+        int line = e.m_actLine;
+        std::string line_content = e.m_actFields;
+        logfile << "line: " << line << ";invalid data field: " << line_content << std::endl;
+    } catch (std::ios_base::failure e) {
+        std::cerr << e.what();
+    }
+    
     // todo 3.2d: export information (i.e., line number + invalid data fields) about exception to a logfile.
     // todo 3.2d: catch ios_base::failure
 }
 
-void checkData(std::string path)
-{
+void checkData(std::string path) {
 
-	int validLines = 0;
+    int validLines = 0;
     int invalidLines = 0;
     int line_Nr = 0;
     std::ifstream file;
     std::string line, parsed;
-    try{
-   		 	
-    		file.open(path);
-    
+    logfile.open("exceptions.log");
+    file.exceptions(std::ifstream::failbit | std::ifstream::badbit);
+    try {
+        file.open(path);
 
-		    while(std::getline(file, line))
-			    {
-				    	try{
-				        file.exceptions ( std::ifstream::failbit | std::ifstream::badbit);
+        while (std::getline(file, line)){
+            try {
+                
+                // skip first line which names the columns
+                if(line_Nr > 0) {
+                    parseLine(line, line_Nr);
+                    validLines++;
+                }
 
-				        parseLine(line, line_Nr);
-				        validLines++;
-
-				        line_Nr++;
-				    }catch(std::logic_error e){
-				    	invalidLines++;
-				        std::cerr << e.what() << "A logic_error occured";
-					    }catch(FormatException &e)
-					    {
-					    	invalidLines++;
-					    	writeOutFormatException(e);
-					    }
-			    }
-	}catch(std::exception e)
-	{
-		std::cerr << e.what() << "Fehler in der Grossen Schleife";
-	}
-    
-
+            } catch(FormatException &e) {
+                invalidLines++;
+                writeOutFormatException(e);
+            }
+            line_Nr++;
+        }
+        file.close();
+    } catch (std::ifstream::failure e) {
+        std::cerr << "Fehler beim oeffnen, lesen oder schliessen der Datei (" << e.what() << ")" << std::endl;
+    }
     
     // todo 3.2a: open file + read each line + call parseLine function (catch ifstream::failure)
     // todo 3.2c: read each line + call parseLine function (catch FormatException) + count valid + invalid lines
