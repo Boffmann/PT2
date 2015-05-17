@@ -74,6 +74,8 @@ void parseLine(std::string line, int lineNum)
             else if(count == 3) exc.m_actFields = fieldNames[2];
             throw exc;
         } catch(std::logic_error e) {  
+            
+            // check line for invalid data fields when data is already invalid
             try {
                 while(std::getline(linestream, parsed, ';')) {
                     count++;
