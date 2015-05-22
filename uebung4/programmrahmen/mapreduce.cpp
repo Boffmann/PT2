@@ -208,20 +208,7 @@ void calculateDistancePerRoute(std::map<int, AirportInfo>& airportInfo)
 				
 			});
 	}
-	//float calculateDistanceBetween(float lat1, float long1, float lat2, float long2)
 
-	/*
-								struct AirportInfo
-							{
-								std::string m_name; 
-								std::string m_city;
-								std::string m_country;
-								float pos[2]; // x: latitude, y: longitude
-
-								std::vector<std::pair<int, int>> m_routes; // dest_id + numStops
-								std::vector<float> m_routeLengths;
-								float m_averageRouteLength;
-							};*/
 }
 
 // ToDo 4.1c - Based on AirportInfo::m_routeLengths, calculate for each airport the average distance of outgoing routes. 
