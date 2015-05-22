@@ -229,8 +229,15 @@ pair<int,int> evolution(vector<vector<int>>& tourSet, bool elite) {
     statistics.second = F[M-1].first; // tour with largest tour length
     
 	// ToDo: compute crossover of two best tours and replace worst tour by the crossover. Use the crossover method.
+    crossover(statistics.first, F[1], statistics.second);
 
 	// ToDo: Mutate all other tours (ignore two best trips and the former worst trip (replaced)). Use the mutate method.
+    std::vector<int> &tour;
+    for(int i = 2;i<M-1;i++)
+    {
+        tour.pushback(F[i]);
+    }
+    mutate(tour);
 
 	return statistics;
  }
