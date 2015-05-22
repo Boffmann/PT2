@@ -193,13 +193,20 @@ void calculateDistancePerRoute(std::map<int, AirportInfo>& airportInfo)
 
 	for (auto & airport : airportInfo)
 	{
-		float lat1 = airport.second.pos[0];
-		float long1 = airport.second.pos[1];
-		float lat2 = airportInfo[airport.second.m_routes[0].first].pos[0];
-		float long2 = airportInfo[airport.second.m_routes[0].first].pos[1];
-		float distance = calculateDistanceBetween(lat1, long1, lat2, long2);
-		//std::transform(airport.second.m_routes.begin(), airport.second.m_routes.end(), airport.second.m_routeLengths.begin(), 
-		//	);
+		std::transform(airport.second.m_routes.begin(), airport.second.m_routes.end(), std::back_inserter(airport.second.m_routeLengths),
+			[&](std::pair<int, int> &route){
+				try{
+					calculateDistanceBetween(airport.second.pos[0], airport.second.pos[1],
+										 airportInfo[route.first].pos[0], 
+										 airportInfo[route.first].pos[1]);
+				}catch(std::out_of_range &e)
+					{
+						std::cerr << "Ein Wert is out of Range " << e.what() << std::endl;
+						return 0.0f;
+					}
+
+				
+			});
 	}
 	//float calculateDistanceBetween(float lat1, float long1, float lat2, float long2)
 
