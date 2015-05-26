@@ -176,7 +176,7 @@ void crossover(const vector<int>& parent1, const vector<int>& parent2, vector<in
     for(int i = 0;i <= N; i++)
         child[i] = -1;
 
-    int a = 0 + (rand() % N-5);
+    int a = 0 + (rand() % (N/2));
     int b = a + 5;
 
     for(int i = a; i<=b;i++)
