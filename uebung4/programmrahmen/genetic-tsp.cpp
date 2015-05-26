@@ -96,9 +96,10 @@ bool validTour(const vector<int>& tour) {
 int cityDistance(int city1, int city2) {
     //ToDo : useful assertion check
 
+    assert(city1 != city2);
     assert(city1 >= 0 && city1 < N);
     assert(city2 >= 0 && city2 < N);
-    assert(city1 != city2);
+    
 
 
 	return distance_table[city1][city2]; 
@@ -111,19 +112,20 @@ int tourLength(const vector<int>& T) {
     assert(tourDefined(T));
     assert(validTour(T));
 
-    int d = 0;
+    int temp = 0;
     for(int i = 0;i<N-1;i++)
     {
-        d+=cityDistance(T[i], T[i+1]);
+        temp+=cityDistance(T[i], T[i+1]);
     }
-    d+=cityDistance(T[N-1], T[0]);
+    temp+=cityDistance(T[N-1], T[0]);
 
-    if(d < minDist)
-        minDist = d;
-    if(d > maxDist)
-        maxDist = d;
+    if(temp > maxDist)
+        maxDist = temp;
+    if(temp < minDist)
+        minDist = temp;
+    
 
-    return d;
+    return temp;
 }
 
 //  print city names of a tour
@@ -147,7 +149,7 @@ void insertCity(vector<int>& tour, int city) {
             }
 
     }
-    assert(false);
+    //assert(false);
 }
 
 
@@ -170,20 +172,20 @@ void generateTours(vector< vector<int> >& tourSet) {
 
 // ToDo: take two (good) parent tours, and build a new one by the gens of both. Hint: Use rand, findCity and insertCity.
 void crossover(const vector<int>& parent1, const vector<int>& parent2, vector<int>& child) {
-    const int SSN = 5;
 
-    child.assign(N, -1);
+    for(int i = 0;i <= N; i++)
+        child[i] = -1;
 
-    int a = 0 + (rand() % N-SSN));
-    int b = a + SSN;
+    int a = 0 + (rand() % N-5);
+    int b = a + 5;
 
     for(int i = a; i<=b;i++)
         child[i] = parent1[i];
     for(int i = 0; i<N;i++)
     {
-        int ithcity = parent2[i];
-        if(!findCity(child, ithcity))
-            insertCity(child, ithcity);
+        int temp = parent2[i];
+        if(!findCity(child, temp))
+            insertCity(child, temp);
     }
 
     assert(tourDefined(child));
@@ -207,15 +209,15 @@ void mutate(vector<int>& tour) {
 
 // ToDo: Create a sorted sequence of (tour length, tour index) pairs (ascending order, i.e., the shorter, the better)
 vector<pair<int,int>> fitness(vector<vector<int>>& tourSet) {
-    vector<pair<int,int>> F(M);
+    vector<pair<int,int>> Check(M);
 
 	for(int i = 0;i<M;i++)
     {
-        F[i] = std::make_pair(tourLength(tourSet[i]),i);
+        Check[i] = std::make_pair(tourLength(tourSet[i]),i);
     }
-    sort(F.begin(), F.end(), [](pair<int, int> p1, pair<int, int> pair2){return p1.first < p2.first;});
+    sort(Check.begin(), Check.end(), [](pair<int, int> p1, pair<int, int> p2){return p1.first < p2.first;});
 
-    return F;
+    return Check;
 }
 
 // evolution step: transform the tour set into the next generation tour set
@@ -229,15 +231,13 @@ pair<int,int> evolution(vector<vector<int>>& tourSet, bool elite) {
     statistics.second = F[M-1].first; // tour with largest tour length
     
 	// ToDo: compute crossover of two best tours and replace worst tour by the crossover. Use the crossover method.
-    crossover(statistics.first, F[1], statistics.second);
+    crossover(tourSet.at(F[0].second), tourSet.at(F[1].second) ,tourSet.at(F[M-1].second));
 
 	// ToDo: Mutate all other tours (ignore two best trips and the former worst trip (replaced)). Use the mutate method.
-    std::vector<int> &tour;
-    for(int i = 2;i<M-1;i++)
+    for(auto i = 2;i<M-1;i++)
     {
-        tour.pushback(F[i]);
+        mutate(tourSet.at(i));
     }
-    mutate(tour);
 
 	return statistics;
  }

@@ -208,7 +208,6 @@ void calculateDistancePerRoute(std::map<int, AirportInfo>& airportInfo)
 				
 			});
 	}
-
 }
 
 // ToDo 4.1c - Based on AirportInfo::m_routeLengths, calculate for each airport the average distance of outgoing routes. 
@@ -221,7 +220,10 @@ void calculateAverageRouteDistances(std::map<int, AirportInfo>& airportInfo)
 	std::cout << "Calculate average distance for each source airport" << std::endl;
 	for (auto & airport : airportInfo)
 	{
-		airport.second.m_averageRouteLength = (std::accumulate(airport.second.m_routeLengths.begin(), airport.second.m_routeLengths.end(), 0))/(airport.second.m_routeLengths.size());
+		if(airport.second.m_routeLengths.size())
+		airport.second.m_averageRouteLength = (float)((std::accumulate(airport.second.m_routeLengths.begin(), airport.second.m_routeLengths.end(), 0))/(airport.second.m_routeLengths.size()));
+		else
+		airport.second.m_averageRouteLength = 0.0f;
 	}
 
 }
