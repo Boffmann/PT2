@@ -17,5 +17,4 @@ elseif(UNIX)
     set(CMAKE_CXX_FLAGS ${CMAKE_CXX_FLAGS} -std=gnu++11)
 endif()
 
-add_executable(mapreduce mapreduce.cpp)
-add_executable(functionwrapping functionwrapping.cpp)
+add_executable(genetic-tsp genetic-tsp.cpp)
