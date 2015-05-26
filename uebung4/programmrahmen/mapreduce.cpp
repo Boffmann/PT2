@@ -196,9 +196,14 @@ void calculateDistancePerRoute(std::map<int, AirportInfo>& airportInfo)
 		std::transform(airport.second.m_routes.begin(), airport.second.m_routes.end(), std::back_inserter(airport.second.m_routeLengths),
 			[&](std::pair<int, int> &route){
 				try{
-					return calculateDistanceBetween(airport.second.pos[0], airport.second.pos[1],
+					// return calculateDistanceBetween(airport.second.pos[0], airport.second.pos[1],
+					//					 airportInfo[route.first].pos[0], 
+					//					 airportInfo[route.first].pos[1]);
+					// works with return on mac but not on linux. without it works on linux but on mac the distance ist 0km
+					calculateDistanceBetween(airport.second.pos[0], airport.second.pos[1],
 										 airportInfo[route.first].pos[0], 
 										 airportInfo[route.first].pos[1]);
+
 				}catch(std::out_of_range &e)
 					{
 						std::cerr << "Ein Wert is out of Range " << e.what() << std::endl;
