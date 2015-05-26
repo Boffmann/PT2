@@ -196,7 +196,7 @@ void calculateDistancePerRoute(std::map<int, AirportInfo>& airportInfo)
 		std::transform(airport.second.m_routes.begin(), airport.second.m_routes.end(), std::back_inserter(airport.second.m_routeLengths),
 			[&](std::pair<int, int> &route){
 				try{
-					calculateDistanceBetween(airport.second.pos[0], airport.second.pos[1],
+					return calculateDistanceBetween(airport.second.pos[0], airport.second.pos[1],
 										 airportInfo[route.first].pos[0], 
 										 airportInfo[route.first].pos[1]);
 				}catch(std::out_of_range &e)
