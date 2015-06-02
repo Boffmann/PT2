@@ -19,21 +19,56 @@ void printContainer(T& container)
 template<class T>
 void front_back_pairing(T& inContainer, T& outContainer)
 {
-
+    // to do: merge front-back pairwise elements of inC into outC 
+    auto itFront = inContainer.begin();
+    auto itBack = inContainer.rbegin();
+    for(int i=0; i<inContainer.size()/2; i++, ++itFront, ++itBack)
+    {
+        outContainer.push_back(*itFront);
+        outContainer.push_back(*itBack);
+    }
 }
 
 // ToDo 5.1b - Remove all duplicates from the given container. Do *not* use the []-operator.
 template<class T>
 void remove_duplicates(T& container)
 {
+    std::sort(container.begin(), container.end());
+    auto last = std::unique(container.begin(), container.end());
+    container.erase(last, container.end());
+}
 
+// 5.1b - Remove all duplicates from the given container. Use this variant if you want to use a special function to compare the elements.
+template<class T, class Compare>
+void remove_duplicates(T& container, Compare cmp)
+{
+    std::sort(container.begin(), container.end(), cmp);
+    auto last = std::unique(container.begin(), container.end());
+    container.erase(last, container.end());
 }
 
 // ToDo 5.1c - Expand the given container by inserting the numerical differences of each element to its neighbors. Do *not* use the []-operator.
 template<class T>
-void insert_differences(T& container)
+void add_differences(T& container)
 {
+    // for empty containers: nothing to do
+    if(container.size()==0) return;
 
+    T helpContainer;
+    auto it0 = container.begin();
+    auto itL = container.end()-1;
+    auto it = container.begin();
+    for(auto it = container.begin(); it!=container.end(); ++it)
+    {
+        auto next = (it==itL) ? it0 : it+1; 
+        auto prev = (it==it0) ? itL : it-1;
+        helpContainer.push_back((*prev)-(*it));
+        helpContainer.push_back(*it);
+        helpContainer.push_back((*next)-(*it));
+    }
+
+    container.clear();
+    std::copy(helpContainer.begin(), helpContainer.end(), std::back_inserter(container));
 }
 
 void testFrontBackPairingFunctionality()
