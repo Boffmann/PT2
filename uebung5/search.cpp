@@ -20,6 +20,10 @@ bool operator<(const Route& r1, const Route& r2) {
 	return r1.destinationId < r2.destinationId;
 }
 
+bool operator==(const Route& r1, const Route& r2) {
+	return r1.destinationId == r2.destinationId;
+}
+
 void importRoutesData(char* path, std::vector<Route>& routes)
 {
 	std::cout << "Importing routes data.." << std::endl;
@@ -76,6 +80,16 @@ void importRoutesData(char* path, std::vector<Route>& routes)
 int linearSearch(int destID, std::vector<Route>& routes, long long& numLookups)
 {
 	int numRoutes = 0;
+	int counts = 0;
+	for(auto it = routes.begin(); it != routes.end(); ++it)
+	{
+		numLookups++;
+		if(routes[counts].destinationId == destID)
+			numRoutes++;
+
+		counts++;
+			
+	}
 
 	return numRoutes;
 }
@@ -87,7 +101,18 @@ std::pair<long long, long long> evaluateLinearSearch(std::vector<Route>& routes)
 {
 	long long numLookups = 0;
 	long long duration = 0;
-	
+	long long counter = 0;
+
+	auto start = std::chrono::high_resolution_clock::now();
+	for(int i = 0; i <= 954; i++)
+	{
+		counter += linearSearch(i, routes, numLookups);
+	}
+	auto time_needed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-start).count() ;
+	duration = (long long) time_needed;
+
+	std::cout << "Linear Search: " << counter << std::endl;
+
 	return std::make_pair(numLookups, duration);
 }
 
@@ -95,7 +120,29 @@ std::pair<long long, long long> evaluateLinearSearch(std::vector<Route>& routes)
 // The vector should have been sorted before calling this function.
 int binarySearch(int destID, std::vector<Route>& routes, long long& numLookups)
 {
-	return 0;
+	int numRoutes = 0;
+	int a = 0;
+	int b = routes.size()-1;
+
+	while(a<b){
+		numLookups ++;
+		int m = (int)((a+b)/2);
+		if(routes[m].destinationId == destID)
+		{
+			//std::cout << m << std::endl;
+			int i = m;
+			while(routes[i].destinationId == destID)
+			{
+				numRoutes++;
+				i++;
+			}
+			return numRoutes;
+		}
+		else if(routes[m].destinationId < destID)
+			a = m+1;
+		else
+			b = m-1;
+	}
 }
 
 // ToDo 5.2b - Evaluate the binarySearch function by calling it for every possible destination id (1..9541). 
@@ -106,6 +153,20 @@ std::pair<long long, long long> evaluateBinarySearch(std::vector<Route>& routes)
 {
 	long long numLookups = 0;
 	long long duration = 0;
+	long long counter = 0;
+
+	std::sort(routes.begin(), routes.end(), [](Route &r1, Route &r2){
+		return r1 < r2;
+	});
+
+	auto start = std::chrono::high_resolution_clock::now();
+	for(int i = 0; i <= 954; i++)
+	{
+		counter += binarySearch(i, routes, numLookups);
+	}
+	auto time_needed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-start).count() ;
+	duration = (long long) time_needed;
+	std::cout << "Binary Search: " << counter << std::endl;
 
 	return std::make_pair(numLookups, duration);
 }
