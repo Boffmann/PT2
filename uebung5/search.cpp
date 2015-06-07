@@ -80,15 +80,10 @@ void importRoutesData(char* path, std::vector<Route>& routes)
 int linearSearch(int destID, std::vector<Route>& routes, long long& numLookups)
 {
 	int numRoutes = 0;
-	int counts = 0;
-	for(auto it = routes.begin(); it != routes.end(); ++it)
-	{
+	for(auto it = routes.begin(); it != routes.end(); ++it) {
 		numLookups++;
-		if(routes[counts].destinationId == destID)
-			numRoutes++;
-
-		counts++;
-			
+		if((*it).destinationId == destID)
+			numRoutes++;			
 	}
 
 	return numRoutes;
