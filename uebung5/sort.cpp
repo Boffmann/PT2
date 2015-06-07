@@ -23,29 +23,35 @@ void merge(T leftIt, T midIt, T rightIt)
 	T tmp_mid = midIt;
 	int counter = 0;
 	std::vector<typename T::value_type> mergedValues(rightIt - leftIt);
-	auto ite = *mergedValues.begin();
 	while(leftIt != tmp_mid && midIt != rightIt) {
-		if((*leftIt) < (*midIt)) {
+		std::cout << "left: " << *leftIt << " mid: " << *midIt << " min: " << std::min(*leftIt, *midIt) << std::endl;
+		if(std::min(*leftIt, *midIt) == (*leftIt)) {
 			mergedValues.at(counter) = *leftIt;
 			++counter;
 			++leftIt;
+			printContainer(mergedValues);
 		} else {
 			mergedValues.at(counter) = *midIt;
 			++counter;
 			++midIt;
+			printContainer(mergedValues);
 		}
 	}
 	while(leftIt != tmp_mid) {
 			mergedValues.at(counter) = *leftIt;
 			++counter;
 			++leftIt;
+			printContainer(mergedValues);
 	}
 	while(midIt != rightIt) {
 			mergedValues.at(counter) = *midIt;
 			++counter;
 			++midIt;
+			printContainer(mergedValues);
 	}
+	std::cout << "end: ";
 	printContainer(mergedValues);
+	std::cout << std::endl;
 }
 
 // ToDo 5.3 - Sort the given container using merge sort.
@@ -69,8 +75,8 @@ void mergeSort(T leftIt, T rightIt)
 	if(leftIt != rightIt-1) {
 		mergeSort(leftIt, mid);
 		mergeSort(mid, rightIt);
-		merge(leftIt, mid, rightIt);
 	}
+	merge(leftIt, mid, rightIt);
 }
 
 int main(int argc, char** argv)
