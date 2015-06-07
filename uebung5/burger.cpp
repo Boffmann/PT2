@@ -90,9 +90,14 @@ std::vector<Order> takeOrders(char* path)
 // Keep in mind that the incoming orders are arbitrarily arranged, but
 // the main list (currentOrders) has to ensure that its entries have ascending table numbers.
 // This way, all orders for the same table can be identified by consecutive orders later.
+bool sortOrders (Order i, Order j) { return (i.table < j.table); }
+
 void processOrders(std::vector<Order>& currentOrders, std::vector<Order>& incomingOrders)
 {
-
+	for (auto i = incomingOrders.begin(); i != incomingOrders.end(); ++i) {
+		currentOrders.push_back(*i);
+	}
+	std::sort(currentOrders.begin(), currentOrders.end(), sortOrders);
 }
 
 // To Do:
@@ -101,9 +106,21 @@ void processOrders(std::vector<Order>& currentOrders, std::vector<Order>& incomi
 // Once this is done, the order list contains only one single order per active table.
 // Tables for which no orders are given are not represented.
 // If two or more orders are merged, their corresponding items (coke, coffee, ...) are just added.
-void mergeOrders(std::vector<Order>& currentOrders)
-{
 
+void mergeOrders(std::vector<Order>& currentOrders)
+{	
+	auto left = currentOrders.begin();
+	++left;
+	while(left != currentOrders.end()) {
+		auto tmp = left - 1;
+		if(left->table == tmp->table) {
+			tmp->coffee += left->coffee;
+			tmp->coke += left->coke;
+			tmp->burger += left->burger;
+			tmp->salad += left->salad;
+			currentOrders.erase(left);
+		} else ++left;
+	}
 }
 
 // To Do:
@@ -112,9 +129,24 @@ void mergeOrders(std::vector<Order>& currentOrders)
 // if it has not paid so far, the price has to be calculated based on
 // a simple price list: coffee or coke: 1 Euro, Burger: 5 Euro, Salad: 4 Euro
 // Remove the order from the order list and return the price for the given table.
+// jeder dritte Burger gratis
+// jedes vierte getraenk gratis
+
+struct tmp_t {
+	int t; 
+  	bool operator() (Order i) { return (i.table == t);}
+} tables;
+
 int pay(int table, std::vector<Order>& currentOrders)
 {
-    return 0;
+	tables.t = table;
+	auto tmp = std::find_if(currentOrders.begin(), currentOrders.end(), tables);
+	int bev = tmp->coffee + tmp->coke;
+	bev -= bev/4;
+	int burg = tmp->burger;
+	burg -= burg/3;
+
+    return (bev * 1) + (burg * 5) + (tmp->salad * 4);
 }
 
 int main(int argc, char* argv[])
