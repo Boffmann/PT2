@@ -141,12 +141,15 @@ int pay(int table, std::vector<Order>& currentOrders)
 {
 	tables.t = table;
 	auto tmp = std::find_if(currentOrders.begin(), currentOrders.end(), tables);
-	int bev = tmp->coffee + tmp->coke;
-	bev -= bev/4;
-	int burg = tmp->burger;
-	burg -= burg/3;
-
-    return (bev * 1) + (burg * 5) + (tmp->salad * 4);
+	if(tmp != currentOrders.end()) {
+		int bev = tmp->coffee + tmp->coke;
+		bev -= bev/4;
+		int burg = tmp->burger;
+		burg -= burg/3;
+		return (bev * 2) + (burg * 5) + (tmp->salad * 4);	
+	}
+	else return 0;
+	
 }
 
 int main(int argc, char* argv[])
