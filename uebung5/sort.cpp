@@ -20,38 +20,50 @@ template<class T>
 void merge(T leftIt, T midIt, T rightIt)
 {
 	assert(leftIt <= midIt && midIt <= rightIt);
-	T tmp_mid = midIt;
+
+	//temp attributes for sorting the vector
+	T left = leftIt;
+	T mid = midIt;
+	T right = rightIt;
 	int counter = 0;
 	std::vector<typename T::value_type> mergedValues(rightIt - leftIt);
-	while(leftIt != tmp_mid && midIt != rightIt) {
-		std::cout << "left: " << *leftIt << " mid: " << *midIt << " min: " << std::min(*leftIt, *midIt) << std::endl;
-		if(std::min(*leftIt, *midIt) == (*leftIt)) {
-			mergedValues.at(counter) = *leftIt;
+	
+	// while both sides not empty
+	while(left != midIt && mid != right) {
+
+		// add smaller of both first elements to vector
+		if(std::min(*left, *mid) == (*left)) {
+			mergedValues.at(counter) = *left;
 			++counter;
-			++leftIt;
-			printContainer(mergedValues);
+			++left;
 		} else {
-			mergedValues.at(counter) = *midIt;
+			mergedValues.at(counter) = *mid;
 			++counter;
-			++midIt;
-			printContainer(mergedValues);
+			++mid;
 		}
 	}
-	while(leftIt != tmp_mid) {
-			mergedValues.at(counter) = *leftIt;
+
+	// left side not yet empty
+	while(left != midIt) {
+			mergedValues.at(counter) = *left;
 			++counter;
-			++leftIt;
-			printContainer(mergedValues);
+			++left;
 	}
-	while(midIt != rightIt) {
-			mergedValues.at(counter) = *midIt;
+
+	// right side not yet empty
+	while(mid != right) {
+			mergedValues.at(counter) = *mid;
 			++counter;
-			++midIt;
-			printContainer(mergedValues);
+			++mid;
 	}
-	std::cout << "end: ";
-	printContainer(mergedValues);
-	std::cout << std::endl;
+
+	// copy sorted data to pointers
+	counter = 0;
+	while(leftIt != rightIt) {	
+		(*leftIt) = mergedValues.at(counter);
+		++counter;
+		++leftIt;
+	}
 }
 
 // ToDo 5.3 - Sort the given container using merge sort.
@@ -71,7 +83,6 @@ void mergeSort(T leftIt, T rightIt)
 		tmp++;
 	}
 	T mid = tmp;
-	//std::cout << cnt << " " << *leftIt << " " << *(rightIt-1) << std::endl;
 	if(leftIt != rightIt-1) {
 		mergeSort(leftIt, mid);
 		mergeSort(mid, rightIt);
@@ -89,11 +100,11 @@ int main(int argc, char** argv)
 	printContainer(sampleDataInt);
 	mergeSort(sampleDataInt.begin(), sampleDataInt.end());
 	printContainer(sampleDataInt);
-#if 0
+
 	// test for string vector
 	printContainer(sampleDataString);
 	mergeSort(sampleDataString.begin(), sampleDataString.end());
 	printContainer(sampleDataString);
-#endif
+
 	return 0;
 }
