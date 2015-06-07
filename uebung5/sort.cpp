@@ -20,42 +20,32 @@ template<class T>
 void merge(T leftIt, T midIt, T rightIt)
 {
 	assert(leftIt <= midIt && midIt <= rightIt);
-	T leftend = midIt-1;
-	T rightend = rightIt-1;
 	T tmp_mid = midIt;
 	int counter = 0;
 	std::vector<typename T::value_type> mergedValues(rightIt - leftIt);
-	std::cout << "rightIT minus leftIT " << (rightIt - leftIt) << std::endl;
-	std::vector<int>::iterator it = mergedValues.begin() + 1;
+	auto ite = *mergedValues.begin();
 	while(leftIt != tmp_mid && midIt != rightIt) {
-		if(*leftIt < *midIt) {
-			//std::cout << "left: " << *leftIt << std::endl;
-			//mergedValues.push_back(*leftIt);
-			mergedValues.insert(it, *leftIt);
-			it++;
-			std::cout << "iterator " << *it << std::endl;
-			leftIt++;
+		if((*leftIt) < (*midIt)) {
+			mergedValues.at(counter) = *leftIt;
+			++counter;
+			++leftIt;
 		} else {
-			//std::cout << "right: " << *midIt << std::endl;
-			mergedValues.insert(it, *midIt);
-			it++;
-			std::cout << "iterator " << *it << std::endl;
-			midIt++;
+			mergedValues.at(counter) = *midIt;
+			++counter;
+			++midIt;
 		}
 	}
 	while(leftIt != tmp_mid) {
-			mergedValues.insert(it, *leftIt);
-			it++;
-			std::cout << "iterator " << *it << std::endl;
-			leftIt++;
+			mergedValues.at(counter) = *leftIt;
+			++counter;
+			++leftIt;
 	}
 	while(midIt != rightIt) {
-			mergedValues.insert(it, *midIt);
-			it++;
-			std::cout << "iterator " << *it << std::endl;
-			midIt++;
+			mergedValues.at(counter) = *midIt;
+			++counter;
+			++midIt;
 	}
-	//printContainer(mergedValues);
+	printContainer(mergedValues);
 }
 
 // ToDo 5.3 - Sort the given container using merge sort.
