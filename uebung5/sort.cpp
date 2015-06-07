@@ -24,44 +24,43 @@ void merge(T leftIt, T midIt, T rightIt)
 	//temp attributes for sorting the vector
 	T left = leftIt;
 	T mid = midIt;
-	T right = rightIt;
-	int counter = 0;
 	std::vector<typename T::value_type> mergedValues(rightIt - leftIt);
+	auto vector_it = mergedValues.begin();
 	
 	// while both sides not empty
-	while(left != midIt && mid != right) {
+	while(left != midIt && mid != rightIt) {
 
 		// add smaller of both first elements to vector
 		if(std::min(*left, *mid) == (*left)) {
-			mergedValues.at(counter) = *left;
-			++counter;
+			(*vector_it) = *left;
+			++vector_it;
 			++left;
 		} else {
-			mergedValues.at(counter) = *mid;
-			++counter;
+			(*vector_it) = *mid;
+			++vector_it;
 			++mid;
 		}
 	}
 
 	// left side not yet empty
 	while(left != midIt) {
-			mergedValues.at(counter) = *left;
-			++counter;
+			(*vector_it) = *left;
+			++vector_it;
 			++left;
 	}
 
 	// right side not yet empty
-	while(mid != right) {
-			mergedValues.at(counter) = *mid;
-			++counter;
+	while(mid != rightIt) {
+			(*vector_it) = *mid;
+			++vector_it;
 			++mid;
 	}
 
 	// copy sorted data to pointers
-	counter = 0;
+	vector_it = mergedValues.begin();
 	while(leftIt != rightIt) {	
-		(*leftIt) = mergedValues.at(counter);
-		++counter;
+		(*leftIt) = *vector_it;
+		++vector_it;
 		++leftIt;
 	}
 }
