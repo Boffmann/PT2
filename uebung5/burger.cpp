@@ -90,14 +90,13 @@ std::vector<Order> takeOrders(char* path)
 // Keep in mind that the incoming orders are arbitrarily arranged, but
 // the main list (currentOrders) has to ensure that its entries have ascending table numbers.
 // This way, all orders for the same table can be identified by consecutive orders later.
-bool sortOrders (Order i, Order j) { return (i.table < j.table); }
 
 void processOrders(std::vector<Order>& currentOrders, std::vector<Order>& incomingOrders)
 {
 	for (auto i = incomingOrders.begin(); i != incomingOrders.end(); ++i) {
 		currentOrders.push_back(*i);
 	}
-	std::sort(currentOrders.begin(), currentOrders.end(), sortOrders);
+	std::sort(currentOrders.begin(), currentOrders.end(), [](Order i, Order j){ return i.table < j.table; });
 }
 
 // To Do:
