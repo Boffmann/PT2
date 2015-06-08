@@ -99,7 +99,7 @@ std::pair<long long, long long> evaluateLinearSearch(std::vector<Route>& routes)
 	long long counter = 0;
 
 	auto start = std::chrono::high_resolution_clock::now();
-	for(int i = 0; i <= 954; i++)
+	for(int i = 0; i <= 9541; i++)
 	{
 		counter += linearSearch(i, routes, numLookups);
 	}
@@ -116,8 +116,9 @@ std::pair<long long, long long> evaluateLinearSearch(std::vector<Route>& routes)
 int binarySearch(int destID, std::vector<Route>& routes, long long& numLookups)
 {
 	int numRoutes = 0;
+#if 1
 	int a = 0;
-	int b = routes.size()-1;
+	int b = routes.size() - 1;
 
 	while(a < b){
 		numLookups++;
@@ -142,6 +143,39 @@ int binarySearch(int destID, std::vector<Route>& routes, long long& numLookups)
 			b = m - 1;
 	}
 	return numRoutes;
+#endif
+#if 0
+	int m = 0;
+	auto a = routes.begin();
+	auto b = routes.end();
+	//auto it = routes.begin();
+	while(a != b) {
+		//std::cout << ++m << std::endl;
+		numLookups++;
+		//auto middle = routes.begin() + ((routes.end() - routes.begin()) / 2);
+		auto middle = routes.begin() + (std::distance(routes.begin(), routes.end()) / 2);
+		std::cout << middle->destinationId << " =? " <<  destID << std::endl;
+		if(middle->destinationId == destID) {
+			auto tmp = middle;
+			while(tmp->destinationId == destID) {
+				--tmp;
+				std::cout << "go back" << std::endl;
+			}
+			++tmp;
+			numRoutes++;
+			while(tmp->destinationId == destID) {
+				++numRoutes;
+				++tmp;
+				std::cout << "count" << std::endl;
+			}
+		} else if(middle->destinationId < destID) {
+			a = middle + 1;
+		} else {
+			b = middle - 1;
+		}
+	}
+	return numRoutes;
+#endif
 }
 
 // ToDo 5.2b - Evaluate the binarySearch function by calling it for every possible destination id (1..9541). 
@@ -159,7 +193,7 @@ std::pair<long long, long long> evaluateBinarySearch(std::vector<Route>& routes)
 	});
 
 	auto start = std::chrono::high_resolution_clock::now();
-	for(int i = 0; i <= 954; i++)
+	for(int i = 0; i <= 9541; i++)
 	{
 		counter += binarySearch(i, routes, numLookups);
 	}
