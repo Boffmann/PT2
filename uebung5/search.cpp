@@ -116,66 +116,71 @@ std::pair<long long, long long> evaluateLinearSearch(std::vector<Route>& routes)
 int binarySearch(int destID, std::vector<Route>& routes, long long& numLookups)
 {
 	int numRoutes = 0;
-#if 1
+#if 0
 	int a = 0;
 	int b = routes.size() - 1;
-
+	int m, i;
 	while(a < b){
-		numLookups++;
-		int m = (a + b)/2;
+		++numLookups;
+		m = (a + b)/2;
 		if(routes[m].destinationId == destID) {
-			numRoutes++;
-			int i = m + 1;
-			while(routes[i].destinationId == destID) {
-				numRoutes++;
-				i++;
-			}
-			i = m - 1;
+			i = m;
 			while(routes[i-1].destinationId == destID) {
-				numRoutes++;
 				--i;
 			}
-			return numRoutes;
+			while(routes[i].destinationId == destID) {
+				++numRoutes;
+				++i;
+			}
+			break;
 		}
-		else if(routes[m].destinationId < destID)
+		else if(routes[m].destinationId < destID) {
 			a = m + 1;
-		else
-			b = m - 1;
+		} else b = m - 1;
 	}
-	return numRoutes;
 #endif
-#if 0
-	int m = 0;
+#if 1
 	auto a = routes.begin();
 	auto b = routes.end();
-	//auto it = routes.begin();
+	auto middle = a + (std::distance(a, b) / 2);
+		std::cout << std::distance(a, b) << std::endl;
+		std::cout << std::distance(a, b)/2 << std::endl;
 	while(a != b) {
-		//std::cout << ++m << std::endl;
-		numLookups++;
-		//auto middle = routes.begin() + ((routes.end() - routes.begin()) / 2);
-		auto middle = routes.begin() + (std::distance(routes.begin(), routes.end()) / 2);
-		std::cout << middle->destinationId << " =? " <<  destID << std::endl;
+		//std::cout << destID;
+		++numLookups;
+		//auto middle = a + (std::distance(a, b) / 2);
+		//std::cout << std::distance(a, b) << std::endl;
+		//std::cout << std::distance(a, b)/2 << std::endl;
 		if(middle->destinationId == destID) {
 			auto tmp = middle;
-			while(tmp->destinationId == destID) {
+	#if 0
+			while((tmp-1)->destinationId == destID) {
 				--tmp;
-				std::cout << "go back" << std::endl;
 			}
-			++tmp;
-			numRoutes++;
 			while(tmp->destinationId == destID) {
 				++numRoutes;
 				++tmp;
-				std::cout << "count" << std::endl;
+				}
+	#endif
+	#if 1
+			while(tmp->destinationId == destID) {
+				++tmp;
+				++numRoutes;
 			}
+			tmp = middle - 1;
+			while(tmp->destinationId == destID) {
+				--tmp;
+				++numRoutes;
+			} 
+	#endif
 		} else if(middle->destinationId < destID) {
 			a = middle + 1;
 		} else {
 			b = middle - 1;
 		}
 	}
-	return numRoutes;
 #endif
+	return numRoutes;
 }
 
 // ToDo 5.2b - Evaluate the binarySearch function by calling it for every possible destination id (1..9541). 
