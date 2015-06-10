@@ -116,10 +116,10 @@ std::pair<long long, long long> evaluateLinearSearch(std::vector<Route>& routes)
 int binarySearch(int destID, std::vector<Route>& routes, long long& numLookups)
 {
 	int numRoutes = 0;
-#if 0
 	int a = 0;
 	int b = routes.size() - 1;
 	int m, i;
+
 	while(a < b){
 		++numLookups;
 		m = (a + b)/2;
@@ -133,53 +133,11 @@ int binarySearch(int destID, std::vector<Route>& routes, long long& numLookups)
 				++i;
 			}
 			break;
-		}
-		else if(routes[m].destinationId < destID) {
+		} else if(routes[m].destinationId < destID) {
 			a = m + 1;
 		} else b = m - 1;
 	}
-#endif
-#if 1
-	auto a = routes.begin();
-	auto b = routes.end();
-	auto middle = a + (std::distance(a, b) / 2);
-		std::cout << std::distance(a, b) << std::endl;
-		std::cout << std::distance(a, b)/2 << std::endl;
-	while(a != b) {
-		//std::cout << destID;
-		++numLookups;
-		//auto middle = a + (std::distance(a, b) / 2);
-		//std::cout << std::distance(a, b) << std::endl;
-		//std::cout << std::distance(a, b)/2 << std::endl;
-		if(middle->destinationId == destID) {
-			auto tmp = middle;
-	#if 0
-			while((tmp-1)->destinationId == destID) {
-				--tmp;
-			}
-			while(tmp->destinationId == destID) {
-				++numRoutes;
-				++tmp;
-				}
-	#endif
-	#if 1
-			while(tmp->destinationId == destID) {
-				++tmp;
-				++numRoutes;
-			}
-			tmp = middle - 1;
-			while(tmp->destinationId == destID) {
-				--tmp;
-				++numRoutes;
-			} 
-	#endif
-		} else if(middle->destinationId < destID) {
-			a = middle + 1;
-		} else {
-			b = middle - 1;
-		}
-	}
-#endif
+
 	return numRoutes;
 }
 
