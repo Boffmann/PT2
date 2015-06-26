@@ -59,7 +59,7 @@ void merge(T leftIt, T midIt, T rightIt)
 	// copy sorted data to pointers
 	vector_it = mergedValues.begin();
 	while(leftIt != rightIt) {	
-		(*leftIt) = *vector_it;
+		*leftIt = *vector_it;
 		++vector_it;
 		++leftIt;
 	}

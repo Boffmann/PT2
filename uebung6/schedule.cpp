@@ -27,6 +27,7 @@ const static int N = 20;
 std::ostream & operator<<(std::ostream & os, const std::vector<Interval> & I) 
 {
 	os << I.size() << std::endl;
+<<<<<<< HEAD
 
     /*for(int i = 0; i < I.size(); i++)
     {
@@ -48,6 +49,11 @@ std::ostream & operator<<(std::ostream & os, const std::vector<Interval> & I)
         os << "$" << std::endl;
     }
     #endif
+=======
+    
+	//TODO 6.3 
+	//Implement a nice print function
+>>>>>>> e875ad5cb472aab845c24ef07d4e0eeb06366dec
 	
 	return os;
 }
@@ -77,9 +83,12 @@ void schedule(const std::vector<Interval> & intervals)
     // ToDo: Exercise 6.3 - sort and schedule intervals
 
 	auto sorted = intervals;
+<<<<<<< HEAD
     std::sort(sorted.begin(), sorted.end(),[](Interval &interval1, Interval &interval2){
         return interval1.end < interval2.end;
     });
+=======
+>>>>>>> e875ad5cb472aab845c24ef07d4e0eeb06366dec
     // sort intervals
 
     std::cout << std::endl << "intervals (sorted):" << std::endl << sorted;
@@ -87,12 +96,15 @@ void schedule(const std::vector<Interval> & intervals)
     // scheduled
     
     auto scheduled = std::vector<Interval>();
+<<<<<<< HEAD
     scheduled.push_back(sorted[0]); //erster Termin kann rein
     for(int i = 1; i < N; i++)
     {
         if(sorted[i].start >= scheduled[scheduled.size()-1].end)
             scheduled.push_back(sorted[i]);
     }
+=======
+>>>>>>> e875ad5cb472aab845c24ef07d4e0eeb06366dec
     
     //ToDo 6.3
 	//implement greedy scheduling

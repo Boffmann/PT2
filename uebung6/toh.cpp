@@ -8,7 +8,11 @@
 #include <cmath>
 
 
+<<<<<<< HEAD
 static const auto N = 5;
+=======
+static const auto N = 4;
+>>>>>>> e875ad5cb472aab845c24ef07d4e0eeb06366dec
 
 auto A = std::vector<int>();
 auto B = std::vector<int>();
@@ -25,6 +29,7 @@ void print()
 
     //TODO 6.2
 	//print state
+<<<<<<< HEAD
     for(int i = N-1; i >= 0; --i)
     {
         std::cout << "              ";
@@ -232,6 +237,18 @@ void ToH(int n, int a, int b, int c, int & moves)
 
    
 
+=======
+
+    std::cout << std::endl << std::endl;
+}
+
+void ToH(const int n, const int a, const int b, const int c, int & moves) 
+{
+    //TODO 6.2
+	//Implement Towers of Hanoi and print
+   
+}
+>>>>>>> e875ad5cb472aab845c24ef07d4e0eeb06366dec
 
 int main(int argc, char ** argv) 
 {

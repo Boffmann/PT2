@@ -99,11 +99,11 @@ std::pair<long long, long long> evaluateLinearSearch(std::vector<Route>& routes)
 	long long counter = 0;
 
 	auto start = std::chrono::high_resolution_clock::now();
-	for(int i = 0; i <= 954; i++)
+	for(int i = 0; i <= 9541; i++)
 	{
 		counter += linearSearch(i, routes, numLookups);
 	}
-	auto time_needed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-start).count() ;
+	auto time_needed = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()-start).count() ;
 	duration = (long long) time_needed;
 
 	std::cout << "Linear Search: " << counter << std::endl;
@@ -117,27 +117,28 @@ int binarySearch(int destID, std::vector<Route>& routes, long long& numLookups)
 {
 	int numRoutes = 0;
 	int a = 0;
-	int b = routes.size()-1;
+	int b = routes.size() - 1;
+	int m, i;
 
-	while(a<b){
-		numLookups ++;
-		int m = (int)((a+b)/2);
-		if(routes[m].destinationId == destID)
-		{
-			//std::cout << m << std::endl;
-			int i = m;
-			while(routes[i].destinationId == destID)
-			{
-				numRoutes++;
-				i++;
+	while(a < b){
+		++numLookups;
+		m = (a + b)/2;
+		if(routes[m].destinationId == destID) {
+			i = m;
+			while(routes[i-1].destinationId == destID) {
+				--i;
 			}
-			return numRoutes;
-		}
-		else if(routes[m].destinationId < destID)
-			a = m+1;
-		else
-			b = m-1;
+			while(routes[i].destinationId == destID) {
+				++numRoutes;
+				++i;
+			}
+			break;
+		} else if(routes[m].destinationId < destID) {
+			a = m + 1;
+		} else b = m - 1;
 	}
+
+	return numRoutes;
 }
 
 // ToDo 5.2b - Evaluate the binarySearch function by calling it for every possible destination id (1..9541). 
@@ -155,11 +156,11 @@ std::pair<long long, long long> evaluateBinarySearch(std::vector<Route>& routes)
 	});
 
 	auto start = std::chrono::high_resolution_clock::now();
-	for(int i = 0; i <= 954; i++)
+	for(int i = 0; i <= 9541; i++)
 	{
 		counter += binarySearch(i, routes, numLookups);
 	}
-	auto time_needed = std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::high_resolution_clock::now()-start).count() ;
+	auto time_needed = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::high_resolution_clock::now()-start).count() ;
 	duration = (long long) time_needed;
 	std::cout << "Binary Search: " << counter << std::endl;
 
