@@ -175,51 +175,38 @@ void prim()
 
     int vertexIndex = 0;
     Q[vertexIndex].key = 0;
-    while(Q.size() > 0)
-    {
+    while(Q.size() > 0) {
         Vertex lowestVertex = Q[0];
         std::for_each(Q.begin(), Q.end(),[&lowestVertex](Vertex &v){
             if(v.key < lowestVertex.key)
                 lowestVertex = v;
         });
+        auto iterate = Q.begin();
+        while(iterate != Q.end()) {
+            if((*iterate).key == lowestVertex.key) {
+                Q.erase(iterate);
+                break;
+            } else iterate++;
+        }
+
+        if(lowestVertex.parent_index != -1) {
+            Edge edge(lowestVertex.parent_index, lowestVertex.index);
+            A.push_back(edge);
+        }
 
 
-            auto iterate = Q.begin();
-            while(iterate != Q.end())
-            {
-                if((*iterate).key == lowestVertex.key)
-                    {
-                        Q.erase(iterate);
-                        break;
+        for(int i = 0; i < E.size(); i++) {
+            if(E[i].vi1 == lowestVertex.index || E[i].vi2 == lowestVertex.index) {
+                for(int j = 0; j < Q.size(); j++) {
+                    bool isvInQ = false;
+                    if(E[i].vi2 == Q[j].index || E[i].vi1 == Q[j].index) {
+                        isvInQ = true;
                     }
-                else iterate++;
-            } 
-
-        if(lowestVertex.parent_index != -1)
-            {
-                Edge edge(lowestVertex.parent_index, lowestVertex.index);
-                A.push_back(edge);
-            }
-
-
-        for(int i = 0; i < E.size(); i++)
-        {
-            if(E[i].vi1 == lowestVertex.index || E[i].vi2 == lowestVertex.index)
-            {
-                for(int j = 0; j < Q.size(); j++)
-                        {
-                            bool isvInQ = false;
-                            if(E[i].vi2 == Q[j].index || E[i].vi1 == Q[j].index)
-                                {
-                                    isvInQ = true;
-                                }
-                        
-                                if(E[i].weight < Q[j].key && isvInQ)
-                                {
-                                    Q[j].parent_index = lowestVertex.index;
-                                    Q[j].key = E[i].weight;  
-                                }   
-                    }
+                    if(E[i].weight < Q[j].key && isvInQ) {
+                        Q[j].parent_index = lowestVertex.index;
+                        Q[j].key = E[i].weight;  
+                    }   
+                }
             }
         }
     }
@@ -232,6 +219,6 @@ void prim()
 int main(int argc, char** argv) 
 {
     prim();
-
+    
     return 0;
 }
