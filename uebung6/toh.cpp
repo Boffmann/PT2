@@ -45,7 +45,7 @@ void print()
         }
 
         std::cout << "              ";
-        index;
+        //index;
         if(i < B.size())
         index = B.at(i);
         else index = 0;
@@ -61,7 +61,7 @@ void print()
         }
         
         std::cout << "              ";
-        index;
+        //index;
         if(i < C.size())
         index = C.at(i);
         else index = 0;
