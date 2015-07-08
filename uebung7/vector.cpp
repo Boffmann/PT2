@@ -6,7 +6,8 @@
 
 #include <vector>
 
-/*struct Vector3d
+#if 0
+struct Vector3d
 {
     double x_;
     double y_;
@@ -61,7 +62,8 @@ void normalize(Vector3d& v)
 void print(Vector3d& v)
 {
 	std::cout << "(" << v.x_ << ", " << v.y_ << ", " << v.z_ << ")" << std::endl;
-}*/
+}
+#endif
 
 class Vector3d{
 public:
@@ -92,18 +94,20 @@ Vector3d::Vector3d(double x, double y, double z) : x_{x}, y_{y}, z_{z}{}
 
 double Vector3d::operator [](const int index){
     assert(index < 3);
-    switch(index) 
-    {
+    double val = 0.0;
+    switch(index) {
         case 0:
-            return x_;
+            val = x_;
             break;
         case 1:
-            return y_;
+            val = y_;
             break;
         case 2:
-            return z_;
+            val = z_;
             break;
     }
+    return val;
+
 }
 
 Vector3d Vector3d::operator+(Vector3d &v){
@@ -134,11 +138,7 @@ Vector3d Vector3d::operator*(double scalar)
 Vector3d Vector3d::operator/(double scalar)
 {
     assert(scalar);
-    Vector3d v = (*this); 
-    double x = v[0]/scalar;
-    double y = v[1]/scalar;
-    double z = v[2]/scalar;
-    return Vector3d(x,y,z);
+    return (*this) * (1/scalar);
 }
 
 bool Vector3d::operator==(Vector3d &v2)
@@ -152,7 +152,7 @@ bool Vector3d::operator!=(Vector3d &v2)
 {
     Vector3d v1 = (*this);
 
-    return v1[0] != v2[0] && v1[1] != v2[1] && v1[2] != v2[2];
+    return !(v1[0] == v2[0] && v1[1] == v2[1] && v1[2] == v2[2]);
 }
 
 Vector3d Vector3d::cross(Vector3d& v1, Vector3d& v2){
