@@ -12,7 +12,7 @@
 using namespace std::chrono;
 
 // uint64_t is defined in stdint.h -> typedef unsigned long long uint64_t
-// -> it's a standardized abbreviation/shortcut for unsigned long long for convinience
+// -> it's a standardized abbreviation/shortcut for unsigned long long for convenience
 
 auto mainThreadId = std::this_thread::get_id();
 
@@ -132,6 +132,11 @@ public:
 
 	~Consumer()
 	{
+		while(!todo_.empty()) {
+			Item* item = todo_.front();
+			todo_.pop_front();
+			delete item;
+		}	
 	}
 
 	void work()
@@ -153,7 +158,6 @@ public:
 		
 		if(todo_.empty()) {
 			todo_.push_back(queue_.pop_front());
-			std::cout << "asd" << std::endl;
 		}
 	}
 
@@ -167,7 +171,7 @@ public:
 		// hint: use std::cout << "\t\t"; before deleting ... makes the output prettier
 
 		// Note: unless you remove some items, no new items will be processed obviously ...
-#if 1
+
 		std::list<Item*> del;
 		for (auto i = todo_.begin(); i != todo_.end(); ++i) {
 			if((*i)->lifeTime() >= 4000) {
@@ -176,24 +180,12 @@ public:
 		}
 
 		while(!del.empty()) {
-			auto i = del.begin();
-			todo_.remove(*i);
+			Item* i = del.front();
+			todo_.remove(i);
+			del.pop_front();
 			std::cout << "\t\t";
-			delete (*i);
-			del.remove(*i);
+			delete i;
 		}
-#endif
-#if 0
-		auto i = todo_.begin();
-		while(i != todo_.end()) {
-			if((*i)->lifeTime() >= 4000) {
-				//Item* tmp = *i;
-				todo_.remove(*i);
-				std::cout << "\t\t";
-				delete *i;
-			} else ++i;
-		}
-#endif
 	}
 
 	void terminate()
@@ -245,18 +237,8 @@ int main(int /*argc*/, char * /*argv*/[])
 	t_work.join(); // block until consumer thread has terminated
 
 	// ToDo: make sure to also delete items left in consumer
-#if 0
-	while(!consumer->queue_.empty()) {
-		delete consumer->queue_.pop_front();
-	}
 
-	while(!consumer->todo_.empty()) {
-		auto i = consumer->todo_.begin();
-		consumer->todo_.remove(*i);
-		delete (*i);
-	}
-#endif
-	consumer->cleanup();
+	delete consumer;
 
 	// number of items left should be 0 -> precisely counted by Items constructor and destructor
 	std::cout << std::endl << Item::items() << " items left in memory ..." << std::endl;
