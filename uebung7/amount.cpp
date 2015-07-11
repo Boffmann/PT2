@@ -31,15 +31,9 @@ class Amount {
 		double getNetto() const;
 		double getBrutto() const;
 		void convert();
-		double convert(double value);
 		void print();
 
 };
-
-Amount::Amount() : brutto{0}, mwst{0.19}, bezeichnung{""}, currency{EUR}
-{
-	netto = brutto / (1.0 + mwst);
-}
 
 Amount::Amount(waehrung curr) : brutto{0}, mwst{0.19}, bezeichnung{""}
 {
@@ -97,7 +91,12 @@ Amount::Amount(double preis, float steuersatz, std::string bezeichnung, waehrung
 void Amount::changeBrutto(double add)
 {
 	brutto += add;
-	netto = brutto / (1.0 + mwst);
+	if(brutto > 0) {
+		netto = brutto / (1.0 + mwst);
+	} else {
+		brutto = 0;
+		netto = 0;
+	}
 }
 
 double Amount::getNetto() const{
@@ -121,15 +120,6 @@ void Amount::convert(){
 	netto *= fac;	
 }
 
-double Amount::convert(double value)
-{
-	if(currency == EUR) {
-		return value *= EUR_TO_USD;
-	} else 
-		return value *= USD_TO_EUR;
-}
-
-
 void Amount::print(){
 	std::string cur = currency == EUR ? "EUR" : "USD";
 	if(bezeichnung.size() >= 1)
@@ -141,47 +131,66 @@ void Amount::print(){
 void test() {
 	//ToDo 7.2
 	//implement tests
-	Amount a1(42);
-	a1.print();
-	a1.convert();
-	a1.print();
-	a1.changeBrutto(50.27);
-	a1.print();
-	a1.convert();
-	a1.print();
 	
+	Amount a1(USD);
+	a1.print();
+	a1.convert();
+	a1.print();
+
 	std::cout << std::endl;
-	
-	Amount a2(9001, 0.8, USD);
+
+	Amount a2(53.54);
 	a2.print();
-	a2.convert();
-	a2.print();
-	a2.changeBrutto(42);
+	a2.changeBrutto(-2.5);
 	a2.print();
 	a2.convert();
 	a2.print();
 
 	std::cout << std::endl;
 	
-	Amount a3(1337, "Skills");
+	Amount a3(82.42, USD);
 	a3.print();
-	a3.convert();
-	a3.print();
-	a3.changeBrutto(42);
-	a3.print();
-	a3.convert();
+	a3.changeBrutto(91.4);
 	a3.print();
 
 	std::cout << std::endl;
 	
-	Amount a4(911, 0.10, "JETFUELCANTMELTSTEELBEAMS", USD);
+	Amount a4(71.23, 0.19);
 	a4.print();
 	a4.convert();
 	a4.print();
-	a4.changeBrutto(1337);
-	a4.print();
-	a4.convert();
-	a4.print();
+
+	std::cout << std::endl;
+	
+	Amount a5(32.1, 0.42, USD);
+	a5.print();
+	a5.convert();
+	a5.print();
+	a5.changeBrutto(12.0);
+	a5.print();
+	a5.convert();
+	a5.print();
+
+	std::cout << std::endl;
+
+	Amount a6(13.37, "Skills");
+	a6.print();
+
+	std::cout << std::endl;
+	
+	Amount a7(9.11, "Cord", USD);
+	a7.print();
+
+	std::cout << std::endl;
+	
+	Amount a8(12.34, 0.07, "Italian BMT");
+	a8.print();
+
+	std::cout << std::endl;
+	
+	Amount a9(43.21, 0.12, "Chicken Teriyaki", USD);
+	a9.print();
+
 }
 
 int main() {
